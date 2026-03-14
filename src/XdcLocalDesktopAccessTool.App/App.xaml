@@ -1,0 +1,18 @@
+<Application x:Class="XdcLocalDesktopAccessTool.App.App"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             StartupUri="MainWindow.xaml">
+    <Application.Resources>
+
+        <!-- Shared rounded tab container style (used by BalanceTab + SendTab) -->
+        <Style x:Key="MainTabContainerStyle" TargetType="Border">
+            <Setter Property="CornerRadius" Value="8"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="BorderBrush" Value="#A0A0A0"/>
+            <Setter Property="Padding" Value="12"/>
+            <Setter Property="Margin" Value="6"/>
+            <Setter Property="Background" Value="#F5F5F5"/>
+        </Style>
+
+    </Application.Resources>
+</Application>

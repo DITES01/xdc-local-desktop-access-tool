@@ -1,0 +1,83 @@
+<Window x:Class="XdcLocalDesktopAccessTool.App.Views.Windows.ExportPrivateKeyWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Export private key"
+        Width="760"
+        Height="300"
+        WindowStartupLocation="CenterOwner"
+        ResizeMode="NoResize">
+
+    <Grid Margin="12">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <StackPanel Grid.Row="0" Margin="0,0,0,10">
+            <TextBlock Text="WARNING: This private key gives full control of the wallet."
+                       FontWeight="Bold"
+                       Margin="0,0,0,4"/>
+            <TextBlock Text="Only export and copy it if you understand the risk."
+                       TextWrapping="Wrap"/>
+        </StackPanel>
+
+        <Grid Grid.Row="1" Margin="0,0,0,8">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+
+            <TextBlock Text="Address:"
+                       VerticalAlignment="Center"
+                       Margin="0,0,8,0"/>
+
+            <TextBox x:Name="AddressTextBox"
+                     Grid.Column="1"
+                     Height="26"
+                     Padding="6,2"
+                     VerticalContentAlignment="Center"
+                     IsReadOnly="True"/>
+        </Grid>
+
+        <CheckBox x:Name="ShowPrivateKeyCheckBox"
+                  Grid.Row="2"
+                  Content="Show private key"
+                  Margin="0,0,0,8"
+                  Checked="ShowPrivateKeyCheckBox_Checked"
+                  Unchecked="ShowPrivateKeyCheckBox_Unchecked"/>
+
+        <Grid Grid.Row="3" Margin="0,0,0,10">
+            <Grid>
+                <PasswordBox x:Name="PrivateKeyPasswordBox"
+                             Height="30"
+                             Padding="6,2"
+                             VerticalContentAlignment="Center"/>
+
+                <TextBox x:Name="PrivateKeyTextBox"
+                         Height="30"
+                         Padding="6,2"
+                         VerticalContentAlignment="Center"
+                         Visibility="Collapsed"
+                         IsReadOnly="True"/>
+            </Grid>
+        </Grid>
+
+        <StackPanel Grid.Row="4"
+                    Orientation="Horizontal"
+                    HorizontalAlignment="Right">
+            <Button x:Name="CopyPrivateKeyButton"
+                    Content="Copy private key"
+                    MinWidth="130"
+                    MinHeight="30"
+                    Margin="0,0,8,0"
+                    Click="CopyPrivateKeyButton_Click"/>
+            <Button Content="Close"
+                    MinWidth="90"
+                    MinHeight="30"
+                    Click="Close_Click"/>
+        </StackPanel>
+    </Grid>
+</Window>

@@ -1,0 +1,23 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net8.0-windows</TargetFramework>
+    <UseWPF>true</UseWPF>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <ApplicationIcon>Assets\Images\XDC_Icon_X.ico</ApplicationIcon>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Resource Include="Assets\Images\XDC_Background.png" />
+    <Resource Include="Assets\Images\XDC_Icon_X.ico" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Nethereum.KeyStore" Version="5.8.0" />
+    <PackageReference Include="Nethereum.Util" Version="5.8.0" />
+    <PackageReference Include="Nethereum.Web3" Version="5.8.0" />
+    <PackageReference Include="Nethereum.HdWallet" Version="5.8.0" />
+  </ItemGroup>
+</Project>

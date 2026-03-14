@@ -1,0 +1,54 @@
+<Window x:Class="XdcLocalDesktopAccessTool.App.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:tabs="clr-namespace:XdcLocalDesktopAccessTool.App.Views.Tabs"
+        Title="XDC Desktop Access Tool"
+        Width="900"
+        Height="560"
+        MinWidth="900"
+        MinHeight="560"
+        ResizeMode="CanResize"
+        WindowStartupLocation="CenterScreen"
+        FontFamily="Segoe UI"
+        FontSize="12"
+        Icon="Assets/Images/XDC_Icon_X.ico">
+
+    <TabControl x:Name="MainTabs"
+                Padding="0"
+                Margin="0"
+                SelectionChanged="MainTabs_SelectionChanged">
+
+        <TabItem x:Name="BalanceTabItem"
+                 Header="Balance"
+                 PreviewMouseLeftButtonDown="TabItem_PreviewMouseLeftButtonDown">
+            <Grid Margin="12">
+                <tabs:BalanceTab x:Name="BalanceTabControl" />
+            </Grid>
+        </TabItem>
+
+        <TabItem x:Name="SendTabItem"
+                 Header="Send"
+                 PreviewMouseLeftButtonDown="TabItem_PreviewMouseLeftButtonDown">
+            <Grid Margin="12">
+                <tabs:SendTab x:Name="SendTabControl" />
+            </Grid>
+        </TabItem>
+
+        <TabItem x:Name="AdvancedTabItem"
+                 Header="Advanced"
+                 PreviewMouseLeftButtonDown="TabItem_PreviewMouseLeftButtonDown">
+            <Grid Margin="12">
+                <tabs:AdvancedTab />
+            </Grid>
+        </TabItem>
+
+        <TabItem x:Name="AboutTabItem"
+                 Header="About"
+                 PreviewMouseLeftButtonDown="TabItem_PreviewMouseLeftButtonDown">
+            <Grid Margin="12">
+                <tabs:AboutTab />
+            </Grid>
+        </TabItem>
+    </TabControl>
+
+</Window>
