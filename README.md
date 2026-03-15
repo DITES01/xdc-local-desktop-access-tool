@@ -1,8 +1,8 @@
 # XDC Local Desktop Access Tool
 
-A local-first desktop utility for interacting with the XDC Network.
+A **local-first desktop wallet utility** for interacting with the XDC Network.
 
-The application provides wallet functionality and transaction tools while keeping private keys and signing operations entirely on the user's machine.
+The application provides wallet functionality and transaction tools while keeping **private keys and signing operations entirely on the user's machine**.
 
 ---
 
@@ -20,77 +20,92 @@ The application provides wallet functionality and transaction tools while keepin
 
 ## Screenshots
 
-### Balance Tab
+<table>
+<tr>
+<td align="center">
 
-<p align="center">
-<img src="./src/XdcLocalDesktopAccessTool.App/Assets/Screenshots/balance-tab-empty.png" width="750">
-</p>
+### Balance (Empty)
 
-<p align="center">
-<img src="./src/XdcLocalDesktopAccessTool.App/Assets/Screenshots/balance-tab-result.png" width="750">
-</p>
+<img src="./src/XdcLocalDesktopAccessTool.App/Assets/Screenshots/balance-tab-empty.png" width="420">
 
----
+</td>
+<td align="center">
+
+### Balance (Result)
+
+<img src="./src/XdcLocalDesktopAccessTool.App/Assets/Screenshots/balance-tab-result.png" width="420">
+
+</td>
+</tr>
+
+<tr>
+<td align="center">
 
 ### Send Transaction
 
-<p align="center">
-<img src="./src/XdcLocalDesktopAccessTool.App/Assets/Screenshots/send-tab-preview.png" width="750">
-</p>
+<img src="./src/XdcLocalDesktopAccessTool.App/Assets/Screenshots/send-tab-preview.png" width="420">
 
----
+</td>
+<td align="center">
 
 ### Wallet Creation
 
-<p align="center">
-<img src="./src/XdcLocalDesktopAccessTool.App/Assets/Screenshots/create-wallet-window.png" width="750">
-</p>
+<img src="./src/XdcLocalDesktopAccessTool.App/Assets/Screenshots/create-wallet-window.png" width="420">
 
----
+</td>
+</tr>
+
+<tr>
+<td align="center">
 
 ### Generate Keystore
 
-<p align="center">
-<img src="./src/XdcLocalDesktopAccessTool.App/Assets/Screenshots/generate-keystore-window.png" width="750">
-</p>
+<img src="./src/XdcLocalDesktopAccessTool.App/Assets/Screenshots/generate-keystore-window.png" width="420">
 
----
+</td>
+<td align="center">
 
-### Authorisation Methods
+### Authorisation (Private Key)
 
-#### Private Key
+<img src="./src/XdcLocalDesktopAccessTool.App/Assets/Screenshots/authorisation-private-key.png" width="420">
 
-<p align="center">
-<img src="./src/XdcLocalDesktopAccessTool.App/Assets/Screenshots/authorisation-private-key.png" width="750">
-</p>
+</td>
+</tr>
 
-#### Keystore
+<tr>
+<td align="center">
 
-<p align="center">
-<img src="./src/XdcLocalDesktopAccessTool.App/Assets/Screenshots/authorisation-keystore.png" width="750">
-</p>
+### Authorisation (Keystore)
 
-#### Seed Phrase
+<img src="./src/XdcLocalDesktopAccessTool.App/Assets/Screenshots/authorisation-keystore.png" width="420">
 
-<p align="center">
-<img src="./src/XdcLocalDesktopAccessTool.App/Assets/Screenshots/authorisation-seed-phrase.png" width="750">
-</p>
+</td>
+<td align="center">
 
----
+### Authorisation (Seed Phrase)
+
+<img src="./src/XdcLocalDesktopAccessTool.App/Assets/Screenshots/authorisation-seed-phrase.png" width="420">
+
+</td>
+</tr>
+
+<tr>
+<td align="center">
 
 ### Support Window
 
-<p align="center">
-<img src="./src/XdcLocalDesktopAccessTool.App/Assets/Screenshots/support-window.png" width="600">
-</p>
+<img src="./src/XdcLocalDesktopAccessTool.App/Assets/Screenshots/support-window.png" width="420">
 
----
+</td>
+<td align="center">
 
 ### About Tab
 
-<p align="center">
-<img src="./src/XdcLocalDesktopAccessTool.App/Assets/Screenshots/about-tab.png" width="600">
-</p>
+<img src="./src/XdcLocalDesktopAccessTool.App/Assets/Screenshots/about-tab.png" width="420">
+
+</td>
+</tr>
+</table>
 
 ---
 
