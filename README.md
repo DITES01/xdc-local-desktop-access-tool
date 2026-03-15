@@ -23,74 +23,6 @@ All sensitive operations are performed **locally on the user's device**.
 
 ---
 
-## Screenshots
-
-### Balance Tab
-
-Check wallet balances using the public XDC RPC.
-
-![Balance Tab](src/XdcLocalDesktopAccessTool.App/Assets/Screenshots/balance-tab-result.png)
-
----
-
-### Send Transaction
-
-Create and preview transactions before sending.
-
-![Send Tab](src/XdcLocalDesktopAccessTool.App/Assets/Screenshots/send-tab-preview.png)
-
----
-
-### Authorisation Window
-
-Local signing requires wallet authorisation using either:
-
-- Keystore JSON
-- Seed phrase
-- Private key
-
-![Authorisation Window](src/XdcLocalDesktopAccessTool.App/Assets/Screenshots/authorisation-keystore.png)
-
----
-
-### Wallet Creation
-
-Create a new wallet locally with BIP39 seed phrase support.
-
-![Create Wallet](src/XdcLocalDesktopAccessTool.App/Assets/Screenshots/create-wallet-window.png)
-
----
-
-### Keystore Generation
-
-Generate encrypted keystore files from a seed phrase.
-
-![Generate Keystore](src/XdcLocalDesktopAccessTool.App/Assets/Screenshots/generate-keystore-window.png)
-
----
-
-### About
-
-Application information and security model overview.
-
-![About Tab](src/XdcLocalDesktopAccessTool.App/Assets/Screenshots/about-tab.png)
-
----
-
-### Support This Tool
-
-If the project is useful to you, you can support development.
-
-![Support Window](src/XdcLocalDesktopAccessTool.App/Assets/Screenshots/support-window.png)
-
-The donation address displayed in the application is:
-
-xdcD8DFc137957CaCe772021a84019E658DEFECCF43
-
-Users can verify this address inside the application interface.
-
----
-
 ## Security Philosophy
 
 This software follows a **local-first security model**.
@@ -102,31 +34,41 @@ The tool does not transmit private keys, seed phrases, or keystore passwords ove
 However, users should understand:
 
 - A compromised computer can compromise any wallet software
-- Always run wallet software on a **trusted system**
-- Never share your **seed phrase** or **private keys**
+- Always run wallet software on a trusted system
+- Never share your seed phrase or private keys
 
 ---
 
-## Project Status
+## Release Verification
 
-The project is currently in **active development**.
+Release signing key fingerprint:
 
-Features and improvements are being added incrementally.
+8528 95BA 07A0 1436 2E1C 3123 4E32 FDC9 A175 BF8E
+
+Release assets include:
+
+- Application archive
+- SHA256 checksum
+- PGP signature
+- Public signing key
+- Verification instructions
+
+Always verify release files before running wallet software.
 
 ---
 
 ## Building the Application
 
-### Requirements
+Requirements
 
-- .NET 8
-- Windows environment
+.NET 8  
+Windows environment
 
-### Build
+Build
 
 dotnet build
 
-### Run
+Run
 
 dotnet run
 
