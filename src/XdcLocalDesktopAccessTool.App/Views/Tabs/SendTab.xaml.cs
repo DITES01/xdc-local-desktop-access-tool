@@ -91,8 +91,28 @@ namespace XdcLocalDesktopAccessTool.App.Views.Tabs
             var authorised = AppSession.Instance.IsAuthorised;
             var hasLastTx = !string.IsNullOrWhiteSpace(AppSession.Instance.LastTxHash);
 
-            PreviewButton.IsEnabled = authorised;
-            SendButton.IsEnabled = authorised;
+            var addr = (ToAddressTextBox.Text ?? string.Empty).Trim();
+            var validAddress = IsFormatValidXdcOr0x(addr);
+
+            var validAmount = decimal.TryParse(
+                AmountTextBox.Text,
+                NumberStyles.Number,
+                CultureInfo.InvariantCulture,
+                out var amt) && amt > 0m;
+
+            bool validGas = true;
+
+            if (GasModeCombo.SelectedIndex == 1)
+            {
+                validGas = decimal.TryParse(
+                    CustomGasTextBox.Text,
+                    NumberStyles.Number,
+                    CultureInfo.InvariantCulture,
+                    out var customGas) && customGas > 0m;
+            }
+
+            PreviewButton.IsEnabled = authorised && validAddress && validAmount && validGas;
+            SendButton.IsEnabled = authorised && validAddress && validAmount && validGas;
             ViewLastTxButton.IsEnabled = authorised && hasLastTx;
 
             ToAddressTextBox.IsEnabled = authorised;
@@ -102,9 +122,7 @@ namespace XdcLocalDesktopAccessTool.App.Views.Tabs
 
             CustomGasTextBox.IsEnabled = authorised && (GasModeCombo.SelectedIndex == 1);
 
-            var addr = (ToAddressTextBox.Text ?? string.Empty).Trim();
-            var valid = IsFormatValidXdcOr0x(addr);
-            ViewToAddressButton.IsEnabled = authorised && valid;
+            ViewToAddressButton.IsEnabled = authorised && validAddress;
 
             UpdateToAddressUi();
         }
@@ -234,6 +252,18 @@ namespace XdcLocalDesktopAccessTool.App.Views.Tabs
             RefreshActionButtons();
         }
 
+        private void AmountTextBox_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            if (!_uiReady) return;
+            RefreshActionButtons();
+        }
+
+        private void CustomGasTextBox_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            if (!_uiReady) return;
+            RefreshActionButtons();
+        }
+
         private void UpdateToAddressUi()
         {
             var authorised = AppSession.Instance.IsAuthorised;
@@ -315,6 +345,8 @@ namespace XdcLocalDesktopAccessTool.App.Views.Tabs
 
             var from0x = TryGetFromAddress0x() ?? "";
             var fromXdc = string.IsNullOrWhiteSpace(from0x) ? "—" : ToXdcAddress(from0x);
+            var estimatedNetworkFeeXdc = (gasGwei * DefaultGasLimit) / 1_000_000_000m;
+            var maximumTotalCostXdc = amountXdc + estimatedNetworkFeeXdc;
 
             OutputText.Text =
                 "Preview:\n" +
@@ -324,6 +356,8 @@ namespace XdcLocalDesktopAccessTool.App.Views.Tabs
                 $"Amount: {amountXdc:0.################} XDC\n" +
                 $"Gas price: {gasGwei:0.##} gwei\n" +
                 $"Gas limit: {DefaultGasLimit}\n" +
+                $"Estimated network fee: {estimatedNetworkFeeXdc:0.################} XDC\n" +
+                $"Maximum total cost: {maximumTotalCostXdc:0.################} XDC\n" +
                 $"ChainId: {AppSession.XdcChainId}\n";
         }
 
@@ -333,12 +367,49 @@ namespace XdcLocalDesktopAccessTool.App.Views.Tabs
             if (!ValidateInputs(out var toXdc, out var amountXdc, out var gasGwei)) return;
 
             var from0x = TryGetFromAddress0x() ?? string.Empty;
-            var fromXdc = string.IsNullOrWhiteSpace(from0x) ? "—" : ToXdcAddress(from0x);
+            if (string.IsNullOrWhiteSpace(from0x))
+            {
+                MessageBox.Show(
+                    "Authorisation is missing wallet address information.\n\nPlease deauthorise and authorise again.",
+                    "Error",
+                    MessageBoxButton.OK,
+                    MessageBoxImage.Error);
+                return;
+            }
+
+            var fromXdc = ToXdcAddress(from0x);
             var networkFeeXdc = (gasGwei * DefaultGasLimit) / 1_000_000_000m;
+            var maximumTotalCostXdc = amountXdc + networkFeeXdc;
             var isDonationSend = string.Equals(
                 ToCanonicalAddress(toXdc),
                 ToCanonicalAddress(DonationAddressXdc),
                 StringComparison.OrdinalIgnoreCase);
+
+            decimal currentBalanceXdc;
+            try
+            {
+                currentBalanceXdc = await GetBalanceXdcAsync(AppSession.Instance.CurrentRpcUrl, from0x);
+            }
+            catch
+            {
+                MessageBox.Show(
+                    "Unable to verify the current wallet balance.\n\nPlease check your RPC connection and try again.",
+                    "Balance Check Failed",
+                    MessageBoxButton.OK,
+                    MessageBoxImage.Warning);
+                return;
+            }
+
+            if (currentBalanceXdc < maximumTotalCostXdc)
+            {
+                MessageBox.Show(
+                    "The wallet does not have enough XDC to cover both the transaction amount and the estimated network fee.\n\n" +
+                    "Please reduce the amount or lower the gas price.",
+                    "Insufficient Funds",
+                    MessageBoxButton.OK,
+                    MessageBoxImage.Warning);
+                return;
+            }
 
             var confirm = MessageBox.Show(
                 "Please confirm this transaction.\n\n" +
@@ -347,7 +418,8 @@ namespace XdcLocalDesktopAccessTool.App.Views.Tabs
                 $"Amount: {amountXdc:0.################} XDC\n" +
                 $"Gas price: {gasGwei:0.##} gwei\n" +
                 $"Gas limit: {DefaultGasLimit}\n" +
-                $"Estimated network fee: {networkFeeXdc:0.################} XDC\n\n" +
+                $"Estimated network fee: {networkFeeXdc:0.################} XDC\n" +
+                $"Maximum total cost: {maximumTotalCostXdc:0.################} XDC\n\n" +
                 "Do you want to continue?",
                 "Confirm Transaction",
                 MessageBoxButton.YesNo,
@@ -486,6 +558,24 @@ namespace XdcLocalDesktopAccessTool.App.Views.Tabs
             }
 
             toXdc = to.StartsWith("xdc", StringComparison.OrdinalIgnoreCase) ? to : ToXdcAddress(to);
+
+            var from0x = TryGetFromAddress0x() ?? string.Empty;
+
+            if (string.Equals(
+                ToCanonicalAddress(from0x),
+                ToCanonicalAddress(toXdc),
+                StringComparison.OrdinalIgnoreCase))
+            {
+                MessageBox.Show(
+                    "Destination address matches the authorised sending address.\n\nPlease enter a different recipient address.",
+                    "Validation Error",
+                    MessageBoxButton.OK,
+                    MessageBoxImage.Warning);
+
+                ToAddressTextBox.Focus();
+                ToAddressTextBox.SelectAll();
+                return false;
+            }
 
             var amtRaw = (AmountTextBox.Text ?? string.Empty).Trim();
             if (!TryParseAndValidateAmount(amtRaw, out amountXdc, out var amountTitle, out var amountMessage))
@@ -667,11 +757,33 @@ namespace XdcLocalDesktopAccessTool.App.Views.Tabs
                     "Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
+
+        private static async Task<decimal> GetBalanceXdcAsync(string rpcUrl, string address0x)
+        {
+            var weiHex = await RpcGas.GetBalanceWeiHexAsync(rpcUrl, address0x);
+
+            if (string.IsNullOrWhiteSpace(weiHex))
+                throw new InvalidOperationException("Balance result was empty.");
+
+            if (weiHex.StartsWith("0x", StringComparison.OrdinalIgnoreCase))
+                weiHex = weiHex.Substring(2);
+
+            if (string.IsNullOrWhiteSpace(weiHex))
+                return 0m;
+
+            if (!BigInteger.TryParse("0" + weiHex, NumberStyles.AllowHexSpecifier, CultureInfo.InvariantCulture, out var wei))
+                throw new InvalidOperationException("Balance result was not valid hex.");
+
+            return UnitConversion.Convert.FromWei(wei);
+        }
     }
 
     internal static class RpcGas
     {
-        private static readonly HttpClient _http = new HttpClient();
+        private static readonly HttpClient _http = new HttpClient
+        {
+            Timeout = TimeSpan.FromSeconds(15)
+        };
 
         public static async Task<decimal?> GetGasPriceGweiAsync(string rpcUrl)
         {
@@ -709,6 +821,35 @@ namespace XdcLocalDesktopAccessTool.App.Views.Tabs
                 return null;
 
             return (decimal)wei / 1_000_000_000m;
+        }
+
+        public static async Task<string> GetBalanceWeiHexAsync(string rpcUrl, string address0x)
+        {
+            if (string.IsNullOrWhiteSpace(rpcUrl))
+                rpcUrl = "https://xdc.public-rpc.com";
+
+            var payload = new
+            {
+                jsonrpc = "2.0",
+                method = "eth_getBalance",
+                @params = new object[] { address0x, "latest" },
+                id = 1
+            };
+
+            var json = JsonSerializer.Serialize(payload);
+
+            using var resp = await _http.PostAsync(
+                rpcUrl,
+                new StringContent(json, Encoding.UTF8, "application/json"));
+
+            resp.EnsureSuccessStatusCode();
+            var body = await resp.Content.ReadAsStringAsync();
+
+            using var doc = JsonDocument.Parse(body);
+            if (!doc.RootElement.TryGetProperty("result", out var resultEl))
+                throw new InvalidOperationException("Balance result missing.");
+
+            return resultEl.GetString() ?? "0x0";
         }
     }
 }

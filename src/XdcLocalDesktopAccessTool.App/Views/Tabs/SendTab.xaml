@@ -91,7 +91,6 @@
                           Height="28">
 
                         <Button x:Name="AuthoriseButton"
-
                                 Content="Authorise (local signing)"
                                 Width="170"
                                 Height="28"
@@ -189,7 +188,8 @@
                          Grid.Column="1"
                          Height="26"
                          Padding="6,2"
-                         VerticalContentAlignment="Center"/>
+                         VerticalContentAlignment="Center"
+                         TextChanged="AmountTextBox_TextChanged"/>
 
             </Grid>
 
@@ -244,7 +244,8 @@
                          Height="26"
                          Padding="6,2"
                          VerticalContentAlignment="Center"
-                         Visibility="Hidden"/>
+                         Visibility="Hidden"
+                         TextChanged="CustomGasTextBox_TextChanged"/>
 
             </Grid>
 

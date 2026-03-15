@@ -116,7 +116,7 @@ namespace XdcLocalDesktopAccessTool.App.Views.Tabs
 
         private async void CheckBalance_Click(object sender, RoutedEventArgs e)
         {
-            BalanceTextBlock.Text = "";
+            BalanceTextBlock.Text = "Checking balance...\nPlease wait.";
 
             var input = (AddressTextBox.Text ?? "").Trim();
             if (!TryValidateAndNormalizeAddress(input, out var addr0x, out var addrXdc))
@@ -209,6 +209,9 @@ namespace XdcLocalDesktopAccessTool.App.Views.Tabs
 
             if (AddressValidTick != null)
                 AddressValidTick.Visibility = isValid ? Visibility.Visible : Visibility.Hidden;
+
+            if (CheckBalanceButton != null)
+                CheckBalanceButton.IsEnabled = isValid && !_isBusy;
 
             if (ViewOnExplorerButton != null)
                 ViewOnExplorerButton.IsEnabled = isValid && !_isBusy;
@@ -342,10 +345,25 @@ namespace XdcLocalDesktopAccessTool.App.Views.Tabs
             if (string.IsNullOrWhiteSpace(hex))
                 return false;
 
-            if (hex.StartsWith("0x"))
+            if (hex.StartsWith("0x", StringComparison.OrdinalIgnoreCase))
                 hex = hex.Substring(2);
 
-            return BigInteger.TryParse(hex, NumberStyles.HexNumber, CultureInfo.InvariantCulture, out value);
+            if (string.IsNullOrWhiteSpace(hex))
+            {
+                value = BigInteger.Zero;
+                return true;
+            }
+
+            if (!HexOnly.IsMatch(hex))
+                return false;
+
+            hex = "0" + hex;
+
+            return BigInteger.TryParse(
+                hex,
+                NumberStyles.AllowHexSpecifier,
+                CultureInfo.InvariantCulture,
+                out value);
         }
 
         private static string WeiToXdcString(BigInteger wei)
@@ -359,10 +377,14 @@ namespace XdcLocalDesktopAccessTool.App.Views.Tabs
             var scaleDown = BigInteger.Pow(10, chainDecimals - displayDecimals);
             var frac = remainder / scaleDown;
 
-            var wholeStr = whole.ToString(CultureInfo.InvariantCulture);
-            var fracStr = frac.ToString(CultureInfo.InvariantCulture).PadLeft(displayDecimals, '0');
+            if (frac == 0)
+                return whole.ToString(CultureInfo.InvariantCulture);
 
-            return $"{wholeStr}.{fracStr}";
+            var fracStr = frac.ToString(CultureInfo.InvariantCulture)
+                              .PadLeft(displayDecimals, '0')
+                              .TrimEnd('0');
+
+            return $"{whole.ToString(CultureInfo.InvariantCulture)}.{fracStr}";
         }
 
         private static void ShowError(string message)
