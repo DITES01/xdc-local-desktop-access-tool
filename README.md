@@ -1,16 +1,12 @@
-![Release](https://img.shields.io/github/v/release/DITES01/xdc-local-desktop-access-tool)
-![License](https://img.shields.io/github/license/DITES01/xdc-local-desktop-access-tool)
-![Last Commit](https://img.shields.io/github/last-commit/DITES01/xdc-local-desktop-access-tool)
-
 # XDC Local Desktop Access Tool
 
-A local-first desktop utility for interacting with the **XDC Network**.
+A local-first desktop utility for interacting with the XDC Network.
 
-The application provides wallet functionality and transaction tools while keeping **private keys and signing operations entirely on the user's machine**.
+The application provides wallet functionality and transaction tools while keeping private keys and signing operations entirely on the user's machine.
 
 ---
 
-# Features
+## Features
 
 - Balance checking via XDC RPC
 - Local transaction signing
@@ -22,121 +18,95 @@ The application provides wallet functionality and transaction tools while keepin
 
 ---
 
-# Screenshots
+## Screenshots
 
-## Balance Tab
-
-<p align="center">
-<img src="src/XdcLocalDesktopAccessTool.App/Assets/Screenshots/balance-tab.png" width="900">
-</p>
-
-Check wallet balances using the public XDC RPC.
-
----
-
-## Send Transaction
+### Balance Tab
 
 <p align="center">
-<img src="src/XdcLocalDesktopAccessTool.App/Assets/Screenshots/send-tab.png" width="900">
+<img src="./src/XdcLocalDesktopAccessTool.App/Assets/Screenshots/balance-tab-empty.png" width="750">
 </p>
-
-Create and preview transactions before sending.
-
----
-
-## Authorisation Window
 
 <p align="center">
-<img src="src/XdcLocalDesktopAccessTool.App/Assets/Screenshots/authorisation-window.png" width="900">
+<img src="./src/XdcLocalDesktopAccessTool.App/Assets/Screenshots/balance-tab-result.png" width="750">
 </p>
-
-Local signing requires wallet authorisation.
 
 ---
 
-## Wallet Creation
+### Send Transaction
 
 <p align="center">
-<img src="src/XdcLocalDesktopAccessTool.App/Assets/Screenshots/create-wallet-window.png" width="900">
+<img src="./src/XdcLocalDesktopAccessTool.App/Assets/Screenshots/send-tab-preview.png" width="750">
 </p>
-
-Create a new wallet locally with BIP39 support.
 
 ---
 
-## Keystore Generation
+### Wallet Creation
 
 <p align="center">
-<img src="src/XdcLocalDesktopAccessTool.App/Assets/Screenshots/generate-keystore-window.png" width="900">
+<img src="./src/XdcLocalDesktopAccessTool.App/Assets/Screenshots/create-wallet-window.png" width="750">
 </p>
-
-Generate encrypted keystore files from seed phrases.
 
 ---
 
-## About Tab
+### Generate Keystore
 
 <p align="center">
-<img src="src/XdcLocalDesktopAccessTool.App/Assets/Screenshots/about-tab.png" width="900">
+<img src="./src/XdcLocalDesktopAccessTool.App/Assets/Screenshots/generate-keystore-window.png" width="750">
 </p>
-
-Application information and security model overview.
 
 ---
 
-## Support Window
+### Authorisation Methods
+
+#### Private Key
 
 <p align="center">
-<img src="src/XdcLocalDesktopAccessTool.App/Assets/Screenshots/support-window.png" width="900">
+<img src="./src/XdcLocalDesktopAccessTool.App/Assets/Screenshots/authorisation-private-key.png" width="750">
 </p>
 
-The donation address displayed in the application is:
+#### Keystore
 
-xdcD8DFc137957CaCe772021a84019E658DEFECCF43
+<p align="center">
+<img src="./src/XdcLocalDesktopAccessTool.App/Assets/Screenshots/authorisation-keystore.png" width="750">
+</p>
 
-Users can verify this inside the application.
+#### Seed Phrase
 
----
-
-# Security Philosophy
-
-This software follows a **local-first security model**.
-
-Private keys and seed phrases never leave the user's machine.
-
-Always verify release files before running wallet software.
+<p align="center">
+<img src="./src/XdcLocalDesktopAccessTool.App/Assets/Screenshots/authorisation-seed-phrase.png" width="750">
+</p>
 
 ---
 
-# Building
+### Support Window
 
-Requirements
-
-.NET 8  
-Windows
-
-Build
-
-dotnet build
-
-Run
-
-dotnet run
+<p align="center">
+<img src="./src/XdcLocalDesktopAccessTool.App/Assets/Screenshots/support-window.png" width="600">
+</p>
 
 ---
 
-# License
+### About Tab
 
-GNU GPL v3
-
----
-
-# Author
-
-David McDougall
+<p align="center">
+<img src="./src/XdcLocalDesktopAccessTool.App/Assets/Screenshots/about-tab.png" width="600">
+</p>
 
 ---
 
-# Disclaimer
+## Security
 
-This software is provided **as is** without warranty of any kind.
+Always verify release downloads before running wallet software.
+
+Each release includes:
+
+- SHA256 checksum
+- PGP signature
+- Public release key
+- Verification instructions
+
+---
+
+## License
+
+GPL-3.0
