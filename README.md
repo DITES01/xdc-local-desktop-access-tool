@@ -1,3 +1,7 @@
+![Release](https://img.shields.io/github/v/release/DITES01/xdc-local-desktop-access-tool)
+![License](https://img.shields.io/github/license/DITES01/xdc-local-desktop-access-tool)
+![Last Commit](https://img.shields.io/github/last-commit/DITES01/xdc-local-desktop-access-tool)
+
 # XDC Local Desktop Access Tool
 
 A local-first desktop utility for interacting with the **XDC Network**.
@@ -8,7 +12,7 @@ This tool is designed for users who prefer **local signing and transparent open-
 
 ---
 
-## Features
+# Features
 
 - Balance checking via XDC RPC
 - Local transaction signing (no external wallet required)
@@ -23,7 +27,75 @@ All sensitive operations are performed **locally on the user's device**.
 
 ---
 
-## Security Philosophy
+# Screenshots
+
+## Balance Tab
+
+![Balance Tab](src/XdcLocalDesktopAccessTool.App/Assets/Screenshots/balance-tab.png)
+
+Check wallet balances using the public XDC RPC.
+
+---
+
+## Send Transaction
+
+![Send Tab](src/XdcLocalDesktopAccessTool.App/Assets/Screenshots/send-tab.png)
+
+Create and preview transactions before sending.
+
+---
+
+## Authorisation Window
+
+![Authorisation Window](src/XdcLocalDesktopAccessTool.App/Assets/Screenshots/authorisation-window.png)
+
+Local signing requires wallet authorisation using either:
+
+- Keystore JSON
+- Seed phrase
+- Private key
+
+---
+
+## Wallet Creation
+
+![Create Wallet](src/XdcLocalDesktopAccessTool.App/Assets/Screenshots/create-wallet-window.png)
+
+Create a new wallet locally with BIP39 seed phrase support.
+
+---
+
+## Keystore Generation
+
+![Generate Keystore](src/XdcLocalDesktopAccessTool.App/Assets/Screenshots/generate-keystore-window.png)
+
+Generate encrypted keystore files from a seed phrase.
+
+---
+
+## About Tab
+
+![About Tab](src/XdcLocalDesktopAccessTool.App/Assets/Screenshots/about-tab.png)
+
+Application information and security model overview.
+
+---
+
+## Support Window
+
+![Support Window](src/XdcLocalDesktopAccessTool.App/Assets/Screenshots/support-window.png)
+
+If the project is useful to you, you can support development.
+
+The donation address displayed in the application is:
+
+xdcD8DFc137957CaCe772021a84019E658DEFECCF43
+
+Users can verify this address inside the application interface.
+
+---
+
+# Security Philosophy
 
 This software follows a **local-first security model**.
 
@@ -39,7 +111,7 @@ However, users should understand:
 
 ---
 
-## Release Verification
+# Release Verification
 
 Release signing key fingerprint:
 
@@ -57,7 +129,7 @@ Always verify release files before running wallet software.
 
 ---
 
-## Building the Application
+# Building the Application
 
 Requirements
 
@@ -74,7 +146,7 @@ dotnet run
 
 ---
 
-## Planned Improvements
+# Planned Improvements
 
 - Additional validation improvements
 - UI polish
@@ -83,7 +155,7 @@ dotnet run
 
 ---
 
-## License
+# License
 
 This project is licensed under the **GNU GPL v3**.
 
@@ -91,13 +163,13 @@ See the LICENSE file for full details.
 
 ---
 
-## Author
+# Author
 
 David McDougall
 
 ---
 
-## Disclaimer
+# Disclaimer
 
 This software is provided **as is**, without warranty of any kind.
 
