@@ -22,12 +22,11 @@
                        FontWeight="Bold"
                        Margin="0,0,0,10"/>
 
-
             <!-- CONTENT -->
             <ScrollViewer Grid.Row="1"
                           VerticalScrollBarVisibility="Auto">
 
-                <StackPanel>
+                <StackPanel Margin="0,0,10,0">
 
                     <TextBlock TextWrapping="Wrap"
                                Margin="0,0,0,12">
@@ -36,56 +35,208 @@ XDC Local Desktop Access Tool is a local-only wallet utility for interacting wit
 All wallet operations occur locally on your computer. Private keys, recovery phrases and keystore passwords are never transmitted to external servers.
                     </TextBlock>
 
-
                     <TextBlock FontWeight="Bold"
                                Margin="0,0,0,4">
 Features:
                     </TextBlock>
 
-                    <TextBlock TextWrapping="Wrap"
-                               Margin="0,0,0,12">
-• Balance checking via public XDC RPC (Chain ID 50)
-• Local transaction signing
-• Secure authorisation required before transactions can be sent
-• Keystore JSON generation for encrypted wallet storage
-• Recovery phrase support with optional BIP39 passphrase
-• Multiple address derivation and scanning
-• Configurable gas modes (Auto or Custom)
-• Explorer integration using XDCScan
-                    </TextBlock>
+                    <StackPanel Margin="0,0,0,12">
 
+                        <Grid Margin="0,0,0,4">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="20"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+                            <TextBlock Text="•"
+                                       VerticalAlignment="Top"/>
+                            <TextBlock Grid.Column="1"
+                                       Text="Balance checking via public XDC RPC (Chain ID 50)"
+                                       TextWrapping="Wrap"/>
+                        </Grid>
+
+                        <Grid Margin="0,0,0,4">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="20"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+                            <TextBlock Text="•"
+                                       VerticalAlignment="Top"/>
+                            <TextBlock Grid.Column="1"
+                                       Text="Local transaction signing"
+                                       TextWrapping="Wrap"/>
+                        </Grid>
+
+                        <Grid Margin="0,0,0,4">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="20"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+                            <TextBlock Text="•"
+                                       VerticalAlignment="Top"/>
+                            <TextBlock Grid.Column="1"
+                                       Text="Secure authorisation required before transactions can be sent"
+                                       TextWrapping="Wrap"/>
+                        </Grid>
+
+                        <Grid Margin="0,0,0,4">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="20"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+                            <TextBlock Text="•"
+                                       VerticalAlignment="Top"/>
+                            <TextBlock Grid.Column="1"
+                                       Text="Keystore JSON generation for encrypted wallet storage"
+                                       TextWrapping="Wrap"/>
+                        </Grid>
+
+                        <Grid Margin="0,0,0,4">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="20"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+                            <TextBlock Text="•"
+                                       VerticalAlignment="Top"/>
+                            <TextBlock Grid.Column="1"
+                                       Text="Recovery phrase support with optional BIP39 passphrase"
+                                       TextWrapping="Wrap"/>
+                        </Grid>
+
+                        <Grid Margin="0,0,0,4">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="20"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+                            <TextBlock Text="•"
+                                       VerticalAlignment="Top"/>
+                            <TextBlock Grid.Column="1"
+                                       Text="Multiple address derivation and scanning"
+                                       TextWrapping="Wrap"/>
+                        </Grid>
+
+                        <Grid Margin="0,0,0,4">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="20"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+                            <TextBlock Text="•"
+                                       VerticalAlignment="Top"/>
+                            <TextBlock Grid.Column="1"
+                                       Text="Configurable gas modes (Auto or Custom)"
+                                       TextWrapping="Wrap"/>
+                        </Grid>
+
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="20"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+                            <TextBlock Text="•"
+                                       VerticalAlignment="Top"/>
+                            <TextBlock Grid.Column="1"
+                                       Text="Explorer integration using XDCScan"
+                                       TextWrapping="Wrap"/>
+                        </Grid>
+
+                    </StackPanel>
 
                     <TextBlock FontWeight="Bold"
                                Margin="0,0,0,4">
 Security Model:
                     </TextBlock>
 
-                    <TextBlock TextWrapping="Wrap"
-                               Margin="0,0,0,12">
-• No accounts
-• No background services
-• No telemetry
-• No remote storage of secrets
+                    <StackPanel Margin="0,0,0,12">
 
+                        <Grid Margin="0,0,0,4">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="20"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+                            <TextBlock Text="•"
+                                       VerticalAlignment="Top"/>
+                            <TextBlock Grid.Column="1"
+                                       Text="No accounts"
+                                       TextWrapping="Wrap"/>
+                        </Grid>
+
+                        <Grid Margin="0,0,0,4">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="20"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+                            <TextBlock Text="•"
+                                       VerticalAlignment="Top"/>
+                            <TextBlock Grid.Column="1"
+                                       Text="No background services"
+                                       TextWrapping="Wrap"/>
+                        </Grid>
+
+                        <Grid Margin="0,0,0,4">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="20"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+                            <TextBlock Text="•"
+                                       VerticalAlignment="Top"/>
+                            <TextBlock Grid.Column="1"
+                                       Text="No telemetry"
+                                       TextWrapping="Wrap"/>
+                        </Grid>
+
+                        <Grid Margin="0,0,0,8">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="20"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+                            <TextBlock Text="•"
+                                       VerticalAlignment="Top"/>
+                            <TextBlock Grid.Column="1"
+                                       Text="No remote storage of secrets"
+                                       TextWrapping="Wrap"/>
+                        </Grid>
+
+                        <TextBlock TextWrapping="Wrap">
 Everything runs locally and remains under the user's control.
-                    </TextBlock>
+                        </TextBlock>
 
+                    </StackPanel>
 
                     <TextBlock FontWeight="Bold"
                                Margin="0,0,0,4">
 Tips:
                     </TextBlock>
 
-                    <TextBlock TextWrapping="Wrap"
-                               Margin="0,0,0,8">
-• Use a keystore file for everyday use.
-• Store recovery phrases and passphrases offline and securely.
-                    </TextBlock>
+                    <StackPanel Margin="0,0,0,8">
+
+                        <Grid Margin="0,0,0,4">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="20"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+                            <TextBlock Text="•"
+                                       VerticalAlignment="Top"/>
+                            <TextBlock Grid.Column="1"
+                                       Text="Use a keystore file for everyday use."
+                                       TextWrapping="Wrap"/>
+                        </Grid>
+
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="20"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+                            <TextBlock Text="•"
+                                       VerticalAlignment="Top"/>
+                            <TextBlock Grid.Column="1"
+                                       Text="Store recovery phrases and passphrases offline and securely."
+                                       TextWrapping="Wrap"/>
+                        </Grid>
+
+                    </StackPanel>
 
                 </StackPanel>
 
             </ScrollViewer>
-
 
             <!-- FOOTER -->
             <Grid Grid.Row="2"
@@ -96,13 +247,11 @@ Tips:
                     <ColumnDefinition Width="Auto"/>
                 </Grid.ColumnDefinitions>
 
-
                 <!-- COPYRIGHT -->
                 <TextBlock Text="© 2026 David McDougall – XDC Local Desktop Access Tool"
                            FontSize="11"
                            Foreground="#666"
                            VerticalAlignment="Center"/>
-
 
                 <!-- SUPPORT BUTTON -->
                 <Button Grid.Column="1"

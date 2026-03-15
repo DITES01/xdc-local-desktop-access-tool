@@ -485,7 +485,7 @@ namespace XdcLocalDesktopAccessTool.App.Views.Windows
 
             string sourceText = _hasWalletContext
                 ? "Selected derived address"
-                : "Recovery phrase (will derive default index 0 on create)";
+                : "Seed phrase (will derive default index 0 on create)";
 
             string text =
                 "Keystore file details\n\n" +
@@ -768,7 +768,7 @@ namespace XdcLocalDesktopAccessTool.App.Views.Windows
                 if (!wordCountOk)
                 {
                     MessageBox.Show(
-                        "Please enter a complete 12 or 24 word recovery phrase.",
+                        "Please enter a complete 12 or 24 word seed phrase.",
                         "Validation Error",
                         MessageBoxButton.OK,
                         MessageBoxImage.Warning);
@@ -787,7 +787,7 @@ namespace XdcLocalDesktopAccessTool.App.Views.Windows
 
                 var confirm = MessageBox.Show(
                     "No selected derived address was passed into this window.\n\n" +
-                    "The app will now derive and use the default wallet at index 0 from the recovery phrase you entered.\n\n" +
+                    "The app will now derive and use the default wallet at index 0 from the seed phrase you entered.\n\n" +
                     "Do you want to continue?",
                     "Create keystore file",
                     MessageBoxButton.YesNo,
@@ -821,13 +821,13 @@ namespace XdcLocalDesktopAccessTool.App.Views.Windows
                 catch (Exception)
                 {
                     MessageBox.Show(
-                        "Unable to derive a wallet from the recovery phrase.\n\n" +
+                        "Unable to derive a wallet from the seed phrase.\n\n" +
                         "Please check that:\n" +
                         "• each word is spelled correctly\n" +
                         "• the words are in the correct order\n" +
                         "• the phrase length is correct\n" +
                         "• the BIP39 passphrase is correct (if one was used)",
-                        "Recovery phrase error",
+                        "Seed phrase error",
                         MessageBoxButton.OK,
                         MessageBoxImage.Warning);
                     return;

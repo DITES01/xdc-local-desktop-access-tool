@@ -10,6 +10,7 @@ using System.Windows;
 using System.Windows.Controls;
 using Nethereum.Hex.HexTypes;
 using Nethereum.RPC.Eth.DTOs;
+using Nethereum.RPC.Eth.Transactions;
 using Nethereum.Util;
 using Nethereum.Web3;
 using Nethereum.Web3.Accounts;
@@ -338,7 +339,7 @@ namespace XdcLocalDesktopAccessTool.App.Views.Tabs
         // PREVIEW / SEND / LAST TX
         // --------------------------------------------------
 
-        private void Preview_Click(object sender, RoutedEventArgs e)
+        private async void Preview_Click(object sender, RoutedEventArgs e)
         {
             if (!EnsureAuthorisedWithKey()) return;
             if (!ValidateInputs(out var toXdc, out var amountXdc, out var gasGwei)) return;
@@ -348,17 +349,41 @@ namespace XdcLocalDesktopAccessTool.App.Views.Tabs
             var estimatedNetworkFeeXdc = (gasGwei * DefaultGasLimit) / 1_000_000_000m;
             var maximumTotalCostXdc = amountXdc + estimatedNetworkFeeXdc;
 
-            OutputText.Text =
-                "Preview:\n" +
-                $"RPC: {AppSession.Instance.CurrentRpcUrl}\n" +
-                $"From: {fromXdc}\n" +
-                $"To: {toXdc}\n" +
-                $"Amount: {amountXdc:0.################} XDC\n" +
-                $"Gas price: {gasGwei:0.##} gwei\n" +
-                $"Gas limit: {DefaultGasLimit}\n" +
-                $"Estimated network fee: {estimatedNetworkFeeXdc:0.################} XDC\n" +
-                $"Maximum total cost: {maximumTotalCostXdc:0.################} XDC\n" +
-                $"ChainId: {AppSession.XdcChainId}\n";
+            decimal? currentBalanceXdc = null;
+            decimal? maximumSpendableXdc = null;
+
+            try
+            {
+                currentBalanceXdc = await GetBalanceXdcAsync(AppSession.Instance.CurrentRpcUrl, from0x);
+                maximumSpendableXdc = currentBalanceXdc.Value - estimatedNetworkFeeXdc;
+                if (maximumSpendableXdc < 0m)
+                    maximumSpendableXdc = 0m;
+            }
+            catch
+            {
+                // Leave balance values null if RPC lookup fails during preview.
+            }
+
+            var sb = new StringBuilder();
+            sb.AppendLine("Preview:");
+            sb.AppendLine($"RPC: {AppSession.Instance.CurrentRpcUrl}");
+            sb.AppendLine($"From: {fromXdc}");
+            sb.AppendLine($"To: {toXdc}");
+            sb.AppendLine($"Amount: {amountXdc:0.################} XDC");
+            sb.AppendLine($"Gas price: {gasGwei:0.##} gwei");
+            sb.AppendLine($"Gas limit: {DefaultGasLimit}");
+            sb.AppendLine($"Estimated network fee: {estimatedNetworkFeeXdc:0.################} XDC");
+            sb.AppendLine($"Maximum total cost: {maximumTotalCostXdc:0.################} XDC");
+
+            if (currentBalanceXdc.HasValue)
+            {
+                sb.AppendLine($"Current balance: {currentBalanceXdc.Value:0.################} XDC");
+                sb.AppendLine($"Maximum spendable now: {maximumSpendableXdc!.Value:0.################} XDC");
+            }
+
+            sb.AppendLine($"ChainId: {AppSession.XdcChainId}");
+
+            OutputText.Text = sb.ToString().TrimEnd();
         }
 
         private async void Send_Click(object sender, RoutedEventArgs e)
@@ -443,13 +468,17 @@ namespace XdcLocalDesktopAccessTool.App.Views.Tabs
                 BigInteger valueWei = UnitConversion.Convert.ToWei(amountXdc);
                 BigInteger gasPriceWei = UnitConversion.Convert.ToWei(gasGwei, UnitConversion.EthUnit.Gwei);
 
+                var nonce = await web3.Eth.Transactions.GetTransactionCount
+                    .SendRequestAsync(account.Address, BlockParameter.CreatePending());
+
                 var tx = new TransactionInput
                 {
                     From = account.Address,
                     To = to0x,
                     Value = new HexBigInteger(valueWei),
                     GasPrice = new HexBigInteger(gasPriceWei),
-                    Gas = new HexBigInteger(DefaultGasLimit)
+                    Gas = new HexBigInteger(DefaultGasLimit),
+                    Nonce = new HexBigInteger(nonce)
                 };
 
                 AppendLine(string.Empty);
@@ -458,6 +487,23 @@ namespace XdcLocalDesktopAccessTool.App.Views.Tabs
 
                 AppSession.Instance.LastTxHash = txHash;
                 AppendLine($"Broadcasted: {txHash}");
+                AppendLine("Waiting for confirmation...");
+
+                TransactionReceipt? receipt = null;
+
+                while (receipt == null)
+                {
+                    await Task.Delay(3000);
+                    receipt = await web3.Eth.Transactions.GetTransactionReceipt.SendRequestAsync(txHash);
+                }
+
+                if (receipt.BlockNumber != null)
+                    AppendLine($"Transaction confirmed in block {receipt.BlockNumber.Value}.");
+
+                if (receipt.Status != null && receipt.Status.Value == 1)
+                    AppendLine("Status: SUCCESS");
+                else
+                    AppendLine("Status: FAILED");
 
                 ToAddressTextBox.Text = string.Empty;
                 AmountTextBox.Text = string.Empty;

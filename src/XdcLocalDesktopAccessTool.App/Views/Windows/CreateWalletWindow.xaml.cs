@@ -106,7 +106,10 @@ namespace XdcLocalDesktopAccessTool.App.Views.Windows
                 _generatedAddress = result.AddressXdc;
 
                 OutputTextBlock.Text =
-                    $"Address: {_generatedAddress}\nDerivation path: {result.DerivationPathUsed}";
+                    $"Address (xdc): {_generatedAddress}\n" +
+                    $"Address (0x): {_generatedAddress0x}\n" +
+                    $"Derivation path: {result.DerivationPathUsed}\n" +
+                    $"BIP39 passphrase: {(usePassphrase ? "Used" : "Not used")}";
 
                 if (ShowRecoveryPhraseCheckBox.IsChecked == true)
                     MnemonicGridControl.Populate(_mnemonicWords);
@@ -155,7 +158,7 @@ namespace XdcLocalDesktopAccessTool.App.Views.Windows
             if (_mnemonicWords == null || _mnemonicWords.Count == 0)
             {
                 MessageBox.Show(
-                    "No recovery phrase available to copy.",
+                    "No seed phrase available to copy.",
                     "Nothing to Copy",
                     MessageBoxButton.OK,
                     MessageBoxImage.Warning);
@@ -165,7 +168,7 @@ namespace XdcLocalDesktopAccessTool.App.Views.Windows
             Clipboard.SetText(string.Join(" ", _mnemonicWords));
 
             MessageBox.Show(
-                "Recovery phrase copied to clipboard.",
+                "Seed phrase copied to clipboard.",
                 "Copied",
                 MessageBoxButton.OK,
                 MessageBoxImage.Information);
@@ -197,7 +200,7 @@ namespace XdcLocalDesktopAccessTool.App.Views.Windows
             {
                 var confirm = MessageBox.Show(
                     "Changing phrase length will clear the current generated wallet.\n\n" +
-                    "Make sure you have written down your recovery phrase.\n\nContinue?",
+                    "Make sure you have written down your seed phrase.\n\nContinue?",
                     "Confirm",
                     MessageBoxButton.YesNo,
                     MessageBoxImage.Warning);
@@ -225,7 +228,7 @@ namespace XdcLocalDesktopAccessTool.App.Views.Windows
             {
                 var confirm = MessageBox.Show(
                     "Changing derivation path will clear the current generated wallet.\n\n" +
-                    "Make sure you have written down your recovery phrase.\n\nContinue?",
+                    "Make sure you have written down your seed phrase.\n\nContinue?",
                     "Confirm",
                     MessageBoxButton.YesNo,
                     MessageBoxImage.Warning);
@@ -359,7 +362,7 @@ namespace XdcLocalDesktopAccessTool.App.Views.Windows
             if (HasGeneratedWallet())
             {
                 var confirm = MessageBox.Show(
-                    "Make sure you have written down your recovery phrase.\n\nClose anyway?",
+                    "Make sure you have written down your seed phrase.\n\nClose anyway?",
                     "Confirm",
                     MessageBoxButton.YesNo,
                     MessageBoxImage.Warning);

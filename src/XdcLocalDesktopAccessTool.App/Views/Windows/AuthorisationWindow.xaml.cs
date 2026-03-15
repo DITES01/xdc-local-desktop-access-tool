@@ -541,7 +541,7 @@ namespace XdcLocalDesktopAccessTool.App.Views.Windows
             else if (_lastAuthTabIndex == 1)
             {
                 canLeave = ConfirmLeaveRecoverySection(
-                    "Changing this screen will clear the current recovery phrase, BIP39 passphrase, and any scanned or selected addresses.\n\nDo you want to continue?");
+                    "Changing this screen will clear the current seed phrase, BIP39 passphrase, and any scanned or selected addresses.\n\nDo you want to continue?");
             }
             else if (_lastAuthTabIndex == 2)
             {
@@ -596,7 +596,7 @@ namespace XdcLocalDesktopAccessTool.App.Views.Windows
             }
 
             if (!ConfirmLeaveRecoverySection(
-                    "Changing phrase length will clear the current recovery phrase, BIP39 passphrase, and any scanned or selected addresses.\n\nDo you want to continue?"))
+                    "Changing phrase length will clear the current seed phrase, BIP39 passphrase, and any scanned or selected addresses.\n\nDo you want to continue?"))
             {
                 _suppressUiEvents = true;
                 PhraseLengthComboBox.SelectedIndex = _lastPhraseLengthIndex;
@@ -1067,36 +1067,46 @@ namespace XdcLocalDesktopAccessTool.App.Views.Windows
 
         private void ClearRecoverySection()
         {
-            foreach (var w in _wordEntries)
-                w.Text = string.Empty;
+            _suppressUiEvents = true;
+            try
+            {
+                foreach (var w in _wordEntries)
+                    w.Text = string.Empty;
 
-            if (PassphrasePasswordBox != null)
-                PassphrasePasswordBox.Password = string.Empty;
+                if (PassphrasePasswordBox != null)
+                    PassphrasePasswordBox.Password = string.Empty;
 
-            if (PassphraseTextBox != null)
-                PassphraseTextBox.Text = string.Empty;
+                if (PassphraseTextBox != null)
+                    PassphraseTextBox.Text = string.Empty;
 
-            if (UsePassphraseCheckBox != null)
-                UsePassphraseCheckBox.IsChecked = false;
+                if (UsePassphraseCheckBox != null)
+                    UsePassphraseCheckBox.IsChecked = false;
 
-            if (ShowPhraseCheckBox != null)
-                ShowPhraseCheckBox.IsChecked = false;
+                if (ShowPhraseCheckBox != null)
+                    ShowPhraseCheckBox.IsChecked = false;
 
-            SyncWordBoxesToModel();
+                SyncWordBoxesToModel();
 
-            if (PhraseLengthComboBox != null)
-                PhraseLengthComboBox.SelectedIndex = 0;
+                if (PhraseLengthComboBox != null)
+                    PhraseLengthComboBox.SelectedIndex = 0;
 
-            if (DerivationPathComboBox != null)
-                DerivationPathComboBox.SelectedIndex = 0;
+                if (DerivationPathComboBox != null)
+                    DerivationPathComboBox.SelectedIndex = 0;
 
-            if (ScanCountComboBox != null)
-                ScanCountComboBox.SelectedIndex = 0;
+                if (ScanCountComboBox != null)
+                    ScanCountComboBox.SelectedIndex = 0;
 
-            _lastPhraseLengthIndex = PhraseLengthComboBox?.SelectedIndex ?? 0;
-            _lastDerivationPathIndex = DerivationPathComboBox?.SelectedIndex ?? 0;
+                _lastPhraseLengthIndex = PhraseLengthComboBox?.SelectedIndex ?? 0;
+                _lastDerivationPathIndex = DerivationPathComboBox?.SelectedIndex ?? 0;
 
-            ClearDerivedSelectionAndRows();
+                ClearDerivedSelectionAndRows();
+            }
+            finally
+            {
+                _suppressUiEvents = false;
+            }
+
+            UpdateAuthoriseEnabled();
         }
 
         private bool ConfirmLeaveRecoverySection(string message)
@@ -1149,6 +1159,41 @@ namespace XdcLocalDesktopAccessTool.App.Views.Windows
             wordCountOk = words.Length == expected;
 
             return string.Join(' ', words);
+        }
+
+        private bool TryBuildAndValidateSeedPhrase(out string mnemonic)
+        {
+            mnemonic = BuildMnemonicFromInputs(out var wordCountOk);
+
+            if (!wordCountOk)
+            {
+                MessageBox.Show(
+                    "Please enter a complete 12 or 24 word seed phrase.",
+                    "Validation Error",
+                    MessageBoxButton.OK,
+                    MessageBoxImage.Warning);
+                return false;
+            }
+
+            try
+            {
+                _ = WalletDerivationService.DeriveFromMnemonic(
+                    mnemonicPhrase: mnemonic,
+                    bip39Passphrase: GetPassphraseOrEmpty(),
+                    derivationPathTemplate: GetSelectedDerivationPathTemplate(),
+                    index: 0);
+
+                return true;
+            }
+            catch
+            {
+                MessageBox.Show(
+                    "Invalid seed phrase. Please check the words and try again.",
+                    "Validation Error",
+                    MessageBoxButton.OK,
+                    MessageBoxImage.Warning);
+                return false;
+            }
         }
 
         private string GetSelectedDerivationPathTemplate()
@@ -1220,37 +1265,11 @@ namespace XdcLocalDesktopAccessTool.App.Views.Windows
             ClearDerivedSelectionAndRows();
             UpdateAuthoriseEnabled();
 
-            var mnemonic = BuildMnemonicFromInputs(out var wordCountOk);
-            if (!wordCountOk)
-            {
-                MessageBox.Show(
-                    "Please enter a complete 12 or 24 word recovery phrase.",
-                    "Validation Error",
-                    MessageBoxButton.OK,
-                    MessageBoxImage.Warning);
-                return;
-            }
-
             if (!ValidateBip39PassphraseIfEnabled())
                 return;
 
-            try
-            {
-                _ = WalletDerivationService.DeriveFromMnemonic(
-                    mnemonicPhrase: mnemonic,
-                    bip39Passphrase: GetPassphraseOrEmpty(),
-                    derivationPathTemplate: GetSelectedDerivationPathTemplate(),
-                    index: 0);
-            }
-            catch
-            {
-                MessageBox.Show(
-                    "Invalid recovery phrase. Please check the words and try again.",
-                    "Validation Error",
-                    MessageBoxButton.OK,
-                    MessageBoxImage.Warning);
+            if (!TryBuildAndValidateSeedPhrase(out var mnemonic))
                 return;
-            }
 
             var pathTemplate = GetSelectedDerivationPathTemplate();
             var count = GetScanCount();
@@ -1409,16 +1428,8 @@ namespace XdcLocalDesktopAccessTool.App.Views.Windows
             if (!ValidateBip39PassphraseIfEnabled())
                 return;
 
-            var mnemonic = BuildMnemonicFromInputs(out var wordCountOk);
-            if (!wordCountOk)
-            {
-                MessageBox.Show(
-                    "Please enter a complete 12 or 24 word recovery phrase.",
-                    "Validation Error",
-                    MessageBoxButton.OK,
-                    MessageBoxImage.Warning);
+            if (!TryBuildAndValidateSeedPhrase(out var mnemonic))
                 return;
-            }
 
             var confirm = MessageBox.Show(
                 "You are about to open the keystore creation window for the selected derived address.\n\n" +
@@ -1561,18 +1572,10 @@ namespace XdcLocalDesktopAccessTool.App.Views.Windows
 
         private void AuthoriseFromRecoveryPhrase()
         {
-            var mnemonic = BuildMnemonicFromInputs(out var wordCountOk);
-            if (!wordCountOk)
-            {
-                MessageBox.Show(
-                    "Please enter a complete 12 or 24 word recovery phrase.",
-                    "Validation Error",
-                    MessageBoxButton.OK,
-                    MessageBoxImage.Warning);
-                return;
-            }
-
             if (!ValidateBip39PassphraseIfEnabled())
+                return;
+
+            if (!TryBuildAndValidateSeedPhrase(out var mnemonic))
                 return;
 
             if (_selectedDerivedRow == null)
@@ -1628,7 +1631,7 @@ namespace XdcLocalDesktopAccessTool.App.Views.Windows
             catch
             {
                 MessageBox.Show(
-                    "Unable to authorise from recovery phrase. Please check inputs and try again.",
+                    "Unable to authorise from seed phrase. Please check inputs and try again.",
                     "Authorisation Failed",
                     MessageBoxButton.OK,
                     MessageBoxImage.Error);

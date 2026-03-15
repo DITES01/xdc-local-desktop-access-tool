@@ -19,7 +19,7 @@
         </Grid.RowDefinitions>
 
         <StackPanel Grid.Row="0" Margin="0,0,0,10">
-            <TextBlock Text="IMPORTANT: Write down your recovery phrase now."
+            <TextBlock Text="IMPORTANT: Write down your seed phrase now."
                        FontWeight="Bold"
                        Margin="0,0,0,2"/>
             <TextBlock Text="You will be asked to verify it before closing this window."/>
@@ -67,7 +67,7 @@
 
         <StackPanel Grid.Row="2" Orientation="Horizontal" Margin="0,0,0,6">
             <CheckBox x:Name="ShowRecoveryPhraseCheckBox"
-                      Content="Show recovery phrase"
+                      Content="Show seed phrase"
                       Margin="0,0,18,0"
                       IsEnabled="False"
                       IsChecked="False"
@@ -142,7 +142,7 @@
             </Grid>
         </Grid>
 
-        <GroupBox Grid.Row="4" Header="Recovery phrase" Margin="0,0,0,10">
+        <GroupBox Grid.Row="4" Header="Seed phrase" Margin="0,0,0,10">
             <Border BorderBrush="#6F6F6F"
                     BorderThickness="1"
                     Padding="6">
@@ -183,7 +183,7 @@
                         Click="CopyAddressButton_Click"/>
 
                 <Button x:Name="CopyRecoveryPhraseButton"
-                        Content="Copy recovery phrase"
+                        Content="Copy seed phrase"
                         Width="180"
                         Height="30"
                         Margin="0,0,0,8"
