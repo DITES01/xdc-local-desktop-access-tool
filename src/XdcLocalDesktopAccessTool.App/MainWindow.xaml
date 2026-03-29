@@ -1,54 +1,75 @@
-<Window x:Class="XdcLocalDesktopAccessTool.App.MainWindow"
+﻿<Window x:Class="XdcLocalDesktopAccessTool.App.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:tabs="clr-namespace:XdcLocalDesktopAccessTool.App.Views.Tabs"
+        xmlns:controls="clr-namespace:XdcLocalDesktopAccessTool.App.Views.Controls"
         Title="XDC Desktop Access Tool"
-        Width="900"
-        Height="560"
-        MinWidth="900"
-        MinHeight="560"
-        ResizeMode="CanResize"
+        Width="1080"
+        Height="940"
+        MinWidth="1080"
+        MinHeight="940"
+        MaxWidth="1080"
+        MaxHeight="940"
+        ResizeMode="CanMinimize"
         WindowStartupLocation="CenterScreen"
         FontFamily="Segoe UI"
         FontSize="12"
         Icon="Assets/Images/XDC_Icon_X.ico">
 
-    <TabControl x:Name="MainTabs"
-                Padding="0"
-                Margin="0"
-                SelectionChanged="MainTabs_SelectionChanged">
+    <Grid>
 
-        <TabItem x:Name="BalanceTabItem"
-                 Header="Balance"
-                 PreviewMouseLeftButtonDown="TabItem_PreviewMouseLeftButtonDown">
-            <Grid Margin="12">
-                <tabs:BalanceTab x:Name="BalanceTabControl" />
-            </Grid>
-        </TabItem>
+        <TabControl x:Name="MainTabs"
+                    SelectionChanged="MainTabs_SelectionChanged">
 
-        <TabItem x:Name="SendTabItem"
-                 Header="Send"
-                 PreviewMouseLeftButtonDown="TabItem_PreviewMouseLeftButtonDown">
-            <Grid Margin="12">
-                <tabs:SendTab x:Name="SendTabControl" />
-            </Grid>
-        </TabItem>
+            
 
-        <TabItem x:Name="AdvancedTabItem"
-                 Header="Advanced"
-                 PreviewMouseLeftButtonDown="TabItem_PreviewMouseLeftButtonDown">
-            <Grid Margin="12">
-                <tabs:AdvancedTab />
-            </Grid>
-        </TabItem>
+            <TabItem Header="Balance / Send"
+                     x:Name="SendTabItem"
+                     PreviewMouseLeftButtonDown="TabItem_PreviewMouseLeftButtonDown">
+                <tabs:SendTab x:Name="SendTabControl"/>
+            </TabItem>
 
-        <TabItem x:Name="AboutTabItem"
-                 Header="About"
-                 PreviewMouseLeftButtonDown="TabItem_PreviewMouseLeftButtonDown">
-            <Grid Margin="12">
-                <tabs:AboutTab />
-            </Grid>
-        </TabItem>
-    </TabControl>
+            <TabItem Header="Advanced"
+                     PreviewMouseLeftButtonDown="TabItem_PreviewMouseLeftButtonDown">
+                <tabs:AdvancedTab/>
+            </TabItem>
 
+            <TabItem Header="About"
+                     PreviewMouseLeftButtonDown="TabItem_PreviewMouseLeftButtonDown">
+                <tabs:AboutTab/>
+            </TabItem>
+
+        </TabControl>
+
+        <Grid x:Name="OverlayHost"
+              Background="#66000000"
+              Visibility="Collapsed"
+              IsHitTestVisible="True"
+              Focusable="True"
+              KeyboardNavigation.TabNavigation="Cycle"
+              Panel.ZIndex="100">
+
+            <!-- Existing working support overlay -->
+            <controls:SupportOverlayControl x:Name="SupportOverlay"
+                                            Visibility="Collapsed"
+                                            HorizontalAlignment="Center"
+                                            VerticalAlignment="Center"
+                                            Panel.ZIndex="1"/>
+
+            <!-- Reusable in-window modal host -->
+            <ContentControl x:Name="ModalOverlayPresenter"
+                            Visibility="Collapsed"
+                            HorizontalAlignment="Stretch"
+                            VerticalAlignment="Stretch"
+                            Panel.ZIndex="2"/>
+
+        </Grid>
+
+    </Grid>
 </Window>
+
+
+
+
+
+

@@ -83,7 +83,7 @@ namespace XdcLocalDesktopAccessTool.App.Services
             }
             else
             {
-                _currentRpcUrl = DefaultRpcUrl;
+                _currentRpcUrl = rpcUrl; // preserve user input, validation handled in UI
             }
         }
 

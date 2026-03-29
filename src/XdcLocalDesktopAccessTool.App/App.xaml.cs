@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Text;
 using System.Windows;
 using System.Windows.Threading;
@@ -9,20 +9,27 @@ namespace XdcLocalDesktopAccessTool.App
     {
         public App()
         {
-            // Catch UI thread exceptions (WPF Dispatcher)
             DispatcherUnhandledException += App_DispatcherUnhandledException;
-
-            // Catch non-UI thread exceptions
             AppDomain.CurrentDomain.UnhandledException += CurrentDomain_UnhandledException;
-
-            // Catch Task exceptions
             System.Threading.Tasks.TaskScheduler.UnobservedTaskException += TaskScheduler_UnobservedTaskException;
+        }
+
+        protected override void OnStartup(StartupEventArgs e)
+        {
+            base.OnStartup(e);
+
+            var mainWindow = new MainWindow();
+            MainWindow = mainWindow;
+            ShutdownMode = ShutdownMode.OnMainWindowClose;
+
+            mainWindow.Show();
+            mainWindow.Activate();
         }
 
         private void App_DispatcherUnhandledException(object sender, DispatcherUnhandledExceptionEventArgs e)
         {
             ShowFatal(e.Exception, "Unhandled UI Exception");
-            e.Handled = true; // prevents WPF crash dialog
+            e.Handled = true;
         }
 
         private void CurrentDomain_UnhandledException(object sender, UnhandledExceptionEventArgs e)
@@ -54,7 +61,6 @@ namespace XdcLocalDesktopAccessTool.App
                 sb.AppendLine(ex.StackTrace ?? "(no stack trace)");
                 sb.AppendLine();
 
-                // Include inner exception if present
                 if (ex.InnerException != null)
                 {
                     sb.AppendLine("Inner Exception:");
@@ -71,7 +77,6 @@ namespace XdcLocalDesktopAccessTool.App
             }
             catch
             {
-                // Last resort fallback
                 MessageBox.Show("A fatal error occurred.", title, MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }

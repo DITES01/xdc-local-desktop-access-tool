@@ -1,0 +1,56 @@
+XDC Local Desktop Access Tool
+Release Verification Instructions
+
+This project provides cryptographic verification so users can confirm
+that downloaded binaries have not been modified.
+
+Release files:
+
+XdcLocalDesktopAccessTool-win-x64.zip
+sha256.txt
+sha256.txt.asc
+david-mcdougall-release-key.asc
+
+--------------------------------------------------
+
+STEP 1 — Import the developer public key
+
+gpg --import david-mcdougall-release-key.asc
+
+Expected fingerprint:
+
+8528 95BA 07A0 1436 2E1C 3123 4E32 FDC9 A175 BF8E
+
+--------------------------------------------------
+
+STEP 2 — Verify the checksum signature
+
+gpg --verify sha256.txt.asc sha256.txt
+
+If successful, GPG should report a good signature from:
+
+David McDougall <littledites@hotmail.co.uk>
+
+--------------------------------------------------
+
+STEP 3 — Verify the release archive checksum
+
+PowerShell:
+
+Get-FileHash .\XdcLocalDesktopAccessTool-win-x64.zip -Algorithm SHA256
+
+Confirm the resulting SHA256 value matches the value recorded in sha256.txt
+
+--------------------------------------------------
+
+Security Notice
+
+This application follows a local-first security model.
+
+Private keys, seed phrases, and keystore passwords are never transmitted
+to external servers. All signing operations occur locally on the user's machine.
+
+Users should always verify downloads before running wallet software.
+
+Author:
+David McDougall

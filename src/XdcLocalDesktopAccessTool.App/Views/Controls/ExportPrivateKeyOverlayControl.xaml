@@ -1,0 +1,131 @@
+<UserControl x:Class="XdcLocalDesktopAccessTool.App.Views.Controls.ExportPrivateKeyOverlayControl"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        HorizontalAlignment="Stretch"
+        VerticalAlignment="Stretch"
+        HorizontalContentAlignment="Stretch"
+        VerticalContentAlignment="Stretch">
+
+    <Grid Background="#F3F3F3">
+        <Border x:Name="MainCardBorder"
+                Background="White"
+                BorderBrush="#6F6F6F"
+                BorderThickness="1"
+                Padding="14"
+                Width="760"
+                MaxHeight="420"
+                HorizontalAlignment="Center"
+                VerticalAlignment="Center">
+
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+
+                <StackPanel Grid.Row="0" Margin="0,0,0,10">
+                    <TextBlock Text="WARNING: This private key gives full control of the wallet."
+                               FontWeight="Bold"
+                               Margin="0,0,0,4"/>
+                    <TextBlock Text="Only export and copy it if you understand the risk."
+                               TextWrapping="Wrap"/>
+                </StackPanel>
+
+                <Grid Grid.Row="1" Margin="0,0,0,8">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+
+                    <TextBlock Text="Address:"
+                               VerticalAlignment="Center"
+                               Margin="0,0,8,0"/>
+
+                    <TextBox x:Name="AddressTextBox"
+                             Grid.Column="1"
+                             Height="26"
+                             Padding="6,2"
+                             VerticalContentAlignment="Center"
+                             IsReadOnly="True"/>
+                </Grid>
+
+                <CheckBox x:Name="ShowPrivateKeyCheckBox"
+                          Grid.Row="2"
+                          Content="Show private key"
+                          Margin="0,0,0,8"
+                          Checked="ShowPrivateKeyCheckBox_Checked"
+                          Unchecked="ShowPrivateKeyCheckBox_Unchecked"/>
+
+                <Grid Grid.Row="3" Margin="0,0,0,10">
+                    <Grid>
+                        <PasswordBox x:Name="PrivateKeyPasswordBox"
+                                     Height="30"
+                                     Padding="6,2"
+                                     VerticalContentAlignment="Center"/>
+
+                        <TextBox x:Name="PrivateKeyTextBox"
+                                 Height="30"
+                                 Padding="6,2"
+                                 VerticalContentAlignment="Center"
+                                 Visibility="Collapsed"
+                                 IsReadOnly="True"/>
+                    </Grid>
+                </Grid>
+
+                <StackPanel Grid.Row="4"
+                            Orientation="Horizontal"
+                            HorizontalAlignment="Right">
+                    <Button x:Name="CopyPrivateKeyButton"
+                            Content="Copy private key"
+                            MinWidth="130"
+                            MinHeight="30"
+                            Margin="0,0,8,0"
+                            Click="CopyPrivateKeyButton_Click"/>
+                    <Button Content="Close"
+                            MinWidth="90"
+                            MinHeight="30"
+                            Click="Close_Click"/>
+                </StackPanel>
+            </Grid>
+        </Border>
+
+        <Border x:Name="CopyResultPanel"
+                Visibility="Collapsed"
+                Background="White"
+                BorderBrush="#6F6F6F"
+                BorderThickness="1"
+                Padding="16"
+                Width="420"
+                HorizontalAlignment="Center"
+                VerticalAlignment="Center"
+                Panel.ZIndex="10">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+
+                <TextBlock Text="Private key copied"
+                           FontWeight="Bold"
+                           FontSize="15"
+                           Margin="0,0,0,10"/>
+
+                <TextBlock Grid.Row="1"
+                           TextWrapping="Wrap"
+                           Margin="0,0,0,14"
+                           Text="The private key has been copied to the clipboard. Make sure you clear it after use and keep it secure."/>
+
+                <Button Grid.Row="2"
+                        Content="OK"
+                        Width="110"
+                        Height="30"
+                        HorizontalAlignment="Right"
+                        Click="CopyResultOkButton_Click"/>
+            </Grid>
+        </Border>
+    </Grid>
+</UserControl>

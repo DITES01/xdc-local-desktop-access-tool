@@ -1,0 +1,93 @@
+<UserControl x:Class="XdcLocalDesktopAccessTool.App.Views.Controls.SupportOverlayControl"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             Width="700"
+             Height="680">
+
+    <Border Background="#F5F5F5"
+            BorderBrush="#A0A0A0"
+            BorderThickness="1"
+            CornerRadius="6"
+            Padding="20">
+
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
+
+            <!-- top message -->
+            <TextBlock Grid.Row="0"
+                       Text="If this tool has helped you, feel free to buy me a coffee."
+                       FontWeight="Bold"
+                       HorizontalAlignment="Center"
+                       TextAlignment="Center"
+                       Margin="0,6,0,18"/>
+
+            <!-- main content -->
+            <Border Grid.Row="1"
+                    Background="#F5F5F5"
+                    BorderBrush="#A0A0A0"
+                    BorderThickness="1"
+                    CornerRadius="6"
+                    Padding="22">
+
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+
+                    <!-- logo -->
+                    <Image x:Name="LogoImage"
+                           Grid.Row="0"
+                           Height="370"
+                           Stretch="Uniform"
+                           HorizontalAlignment="Center"
+                           VerticalAlignment="Center"
+                           RenderOptions.BitmapScalingMode="HighQuality"
+                           SnapsToDevicePixels="True"
+                           Margin="0,0,0,0"/>
+
+                    <!-- donation box -->
+                    <GroupBox Grid.Row="1"
+                              Header="Donation address (XDC)"
+                              Padding="20"
+                              BorderThickness="1.5"
+                              Margin="0,0,0,0">
+
+                        <StackPanel Margin="4">
+
+                            <TextBox x:Name="DonationAddressTextBox"
+                                     Height="28"
+                                     IsReadOnly="True"
+                                     TextAlignment="Center"
+                                     VerticalContentAlignment="Center"
+                                     Margin="0,0,0,12"
+                                     Text="xdcd8DFc137957CaCe772021a84019E658DEFECCF43"/>
+
+                            <Button x:Name="CopyAddressButton"
+                                    Content="Copy address"
+                                    Width="130"
+                                    Height="30"
+                                    HorizontalAlignment="Center"
+                                    Click="CopyAddress_Click"/>
+
+                        </StackPanel>
+
+                    </GroupBox>
+                </Grid>
+            </Border>
+
+            <!-- close button -->
+            <Grid Grid.Row="2" Margin="0,14,0,0">
+                <Button Content="Close"
+                        Width="90"
+                        Height="28"
+                        HorizontalAlignment="Right"
+                        Click="Close_Click"/>
+            </Grid>
+        </Grid>
+    </Border>
+</UserControl>

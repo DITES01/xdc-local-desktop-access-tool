@@ -1,0 +1,672 @@
+<UserControl x:Class="XdcLocalDesktopAccessTool.App.Views.Controls.AuthorisationOverlayControl"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             HorizontalAlignment="Stretch"
+             VerticalAlignment="Stretch"
+             Focusable="True"
+             SnapsToDevicePixels="True">
+
+    <UserControl.Resources>
+                <Style x:Key="AuthCardBorderStyle" TargetType="Border">
+            <Setter Property="BorderBrush" Value="#CFCFCF"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="Background" Value="#FBFBFB"/>
+            <Setter Property="Padding" Value="18"/>
+            <Setter Property="Width" Value="900"/>
+            <Setter Property="HorizontalAlignment" Value="Center"/>
+            <Setter Property="VerticalAlignment" Value="Top"/>
+            <Setter Property="Margin" Value="0"/>
+        </Style>
+
+        <Style x:Key="AuthInfoPanelStyle" TargetType="Border">
+            <Setter Property="BorderBrush" Value="#DEDEDE"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="Background" Value="#F6F6F6"/>
+            <Setter Property="Padding" Value="10"/>
+            <Setter Property="Margin" Value="0,0,0,14"/>
+        </Style>
+
+        <Style x:Key="AuthLabelStyle" TargetType="TextBlock">
+            <Setter Property="VerticalAlignment" Value="Center"/>
+            <Setter Property="Margin" Value="0,0,10,0"/>
+        </Style>
+
+        <Style x:Key="AuthTextBoxStyle" TargetType="TextBox">
+            <Setter Property="Height" Value="28"/>
+            <Setter Property="Padding" Value="6,2"/>
+            <Setter Property="VerticalContentAlignment" Value="Center"/>
+        </Style>
+
+        <Style x:Key="AuthPasswordBoxStyle" TargetType="PasswordBox">
+            <Setter Property="Height" Value="28"/>
+            <Setter Property="Padding" Value="6,2"/>
+            <Setter Property="VerticalContentAlignment" Value="Center"/>
+        </Style>
+    </UserControl.Resources>
+
+    <Border BorderBrush="#CFCFCF"
+            BorderThickness="1"
+            Background="#FBFBFB"
+            CornerRadius="0"
+            Padding="12"
+            HorizontalAlignment="Stretch"
+            VerticalAlignment="Stretch">
+
+        <Grid Margin="8" SnapsToDevicePixels="True">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
+
+            <StackPanel Grid.Row="0" Margin="0,0,0,4">
+                <TextBlock Text="Authorisation Required (Local Signing)"
+                           FontSize="15"
+                           FontWeight="SemiBold"
+                           Margin="0,0,0,4"/>
+                <TextBlock TextWrapping="Wrap">
+                    <Run Text="Authorisation is required to use local signing features (Send tab)."/>
+                    <LineBreak/>
+                    <Run Text="Secrets are not written to disk. Passwords are never stored."/>
+                    <LineBreak/>
+                    <Run Text="Authorisation is memory-only and clears on Deauthorise or app close."/>
+                </TextBlock>
+            </StackPanel>
+
+            <TabControl x:Name="AuthTabControl" HorizontalAlignment="Stretch" MaxWidth="1000"
+                        Grid.Row="1"
+                        PreviewMouseLeftButtonDown="AuthTabControl_PreviewMouseLeftButtonDown"
+                        SelectionChanged="AuthTabControl_SelectionChanged">
+
+                <TabItem Header="Keystore (JSON) - Recommended">
+                    <Grid Margin="10">
+                        <Border Style="{StaticResource AuthCardBorderStyle}">
+                            <Grid>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                </Grid.RowDefinitions>
+
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto"/>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="Auto"/>
+                                </Grid.ColumnDefinitions>
+
+                                <Border Grid.Row="0"
+                                        Grid.ColumnSpan="3"
+                                        Style="{StaticResource AuthInfoPanelStyle}">
+                                    <StackPanel>
+                                        <TextBlock Text="Recommended for most users."
+                                                   FontWeight="SemiBold"
+                                                   Foreground="#222"
+                                                   Margin="0,0,0,3"/>
+                                        <TextBlock Text="Use a keystore JSON file with its password to authorise local signing securely."
+                                                   TextWrapping="Wrap"
+                                                   Foreground="#333"/>
+                                    </StackPanel>
+                                </Border>
+
+                                <TextBlock Grid.Row="1"
+                                           Grid.Column="0"
+                                           Style="{StaticResource AuthLabelStyle}"
+                                           Text="Keystore file:"/>
+
+                                <TextBox x:Name="KeystorePathTextBox"
+                                         Grid.Row="1"
+                                         Grid.Column="1"
+                                         Style="{StaticResource AuthTextBoxStyle}"
+                                         Margin="0,0,10,0"
+                                         TextChanged="AuthInputs_Changed"/>
+
+                                <Button x:Name="BrowseButton"
+                                        Grid.Row="1"
+                                        Grid.Column="2"
+                                        Content="Browse..."
+                                        Width="90"
+                                        Click="BrowseKeystore_Click"/>
+
+                                <TextBlock Grid.Row="2"
+                                           Grid.Column="0"
+                                           Style="{StaticResource AuthLabelStyle}"
+                                           Text="Password:"
+                                           Margin="0,12,10,0"/>
+
+                                <Grid Grid.Row="2"
+                                      Grid.Column="1"
+                                      Margin="0,12,10,0">
+                                    <Grid>
+                                        <PasswordBox x:Name="KeystorePasswordBox"
+                                                     Style="{StaticResource AuthPasswordBoxStyle}"
+                                                     PasswordChanged="AuthPasswordBox_PasswordChanged"/>
+
+                                        <TextBox x:Name="KeystorePasswordTextBox"
+                                                 Visibility="Collapsed"
+                                                 Style="{StaticResource AuthTextBoxStyle}"
+                                                 TextChanged="AuthInputs_Changed"/>
+                                    </Grid>
+                                </Grid>
+
+                                <CheckBox x:Name="ShowPasswordCheckBox"
+                                          Grid.Row="3"
+                                          Grid.Column="1"
+                                          Margin="0,10,0,0"
+                                          Content="Show password"
+                                          Checked="ShowPasswordCheckBox_Checked"
+                                          Unchecked="ShowPasswordCheckBox_Unchecked"/>
+                            </Grid>
+                        </Border>
+                    </Grid>
+                </TabItem>
+
+                                <TabItem x:Name="SeedPhraseTab" Header="Seed Phrase - Advanced">
+                    <Grid Margin="10">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="38"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                        </Grid.RowDefinitions>
+
+                        <Grid Grid.Row="0" Margin="0,0,0,10">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="140"/>
+                                <ColumnDefinition Width="20"/>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="Auto"/>
+                            </Grid.ColumnDefinitions>
+
+                            <TextBlock Text="Phrase length"
+                                       VerticalAlignment="Center"
+                                       Margin="0,0,8,0"/>
+
+                            <ComboBox x:Name="PhraseLengthComboBox"
+                                      Grid.Column="1"
+                                      Width="140"
+                                      SelectedIndex="0"
+                                      SelectionChanged="PhraseLengthComboBox_SelectionChanged">
+                                <ComboBoxItem Content="12 words"/>
+                                <ComboBoxItem Content="24 words"/>
+                            </ComboBox>
+
+                            <CheckBox x:Name="UsePassphraseCheckBox"
+                                      Grid.Column="3"
+                                      Content="Use BIP39 passphrase (advanced)"
+                                      VerticalAlignment="Center"
+                                      Margin="0,0,18,0"
+                                      Checked="UsePassphraseCheckBox_Changed"
+                                      Unchecked="UsePassphraseCheckBox_Changed"/>
+
+                            <CheckBox x:Name="ShowPhraseCheckBox"
+                                      Grid.Column="4"
+                                      Content="Show seed phrase while typing"
+                                      VerticalAlignment="Center"
+                                      Checked="ShowPhraseCheckBox_Changed"
+                                      Unchecked="ShowPhraseCheckBox_Changed"/>
+                        </Grid>
+
+                                                <Grid x:Name="PassphraseRowGrid"
+                              Grid.Row="1"
+                              Visibility="Hidden"
+                              Margin="0,0,0,10">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="320"/>
+                                <ColumnDefinition Width="20"/>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="Auto"/>
+                            </Grid.ColumnDefinitions>
+
+                            <TextBlock Text="Passphrase"
+                                       VerticalAlignment="Center"
+                                       Margin="0,0,8,0"/>
+
+                            <Grid Grid.Column="1" VerticalAlignment="Center">
+                                <PasswordBox x:Name="PassphrasePasswordBox"
+                                             Padding="6,2"
+                                             PasswordChanged="PassphrasePasswordBox_PasswordChanged"/>
+
+                                <TextBox x:Name="PassphraseTextBox"
+                                         Padding="6,2"
+                                         Visibility="Collapsed"
+                                         TextChanged="PassphraseTextBox_TextChanged"/>
+                            </Grid>
+
+                            <CheckBox x:Name="ShowBip39PassphraseCheckBox"
+                                      Grid.Column="3"
+                                      Content="Show passphrase"
+                                      VerticalAlignment="Center"
+                                      IsEnabled="False"
+                                      Checked="ShowBip39PassphraseCheckBox_Checked"
+                                      Unchecked="ShowBip39PassphraseCheckBox_Unchecked"/>
+                        </Grid>
+
+                        <TextBlock x:Name="Bip39PassphraseInfoTextBlock"
+                                   Grid.Row="2"
+                                   Visibility="Collapsed"
+                                   Margin="0,0,0,8"
+                                   Foreground="#7A1F1F"
+                                   TextWrapping="Wrap"
+                                   Text="BIP39 passphrase changes the derived wallet addresses. You must use the exact same passphrase again to recover this wallet."/>
+
+                        <Grid Grid.Row="3" Margin="0,0,0,10">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="*"/>
+                            </Grid.RowDefinitions>
+
+                            <TextBlock Grid.Row="0"
+                                       Text="Seed phrase"
+                                       FontWeight="SemiBold"
+                                       Margin="0,0,0,4"/>
+
+                            <Border Grid.Row="1"
+                                    BorderBrush="#6F6F6F"
+                                    BorderThickness="1"
+                                    Padding="4">
+
+                                <ItemsControl x:Name="WordsItemsControl">
+                                    <ItemsControl.ItemsPanel>
+                                        <ItemsPanelTemplate>
+                                            <UniformGrid Columns="4" Rows="6"/>
+                                        </ItemsPanelTemplate>
+                                    </ItemsControl.ItemsPanel>
+
+                                    <ItemsControl.ItemTemplate>
+                                        <DataTemplate>
+                                            <Border x:Name="WordCellRoot" Margin="5,1,5,1">
+                                                <Border.Style>
+                                                    <Style TargetType="Border">
+                                                        <Setter Property="Visibility" Value="Visible"/>
+                                                        <Style.Triggers>
+                                                            <DataTrigger Binding="{Binding IsPlaceholder}" Value="True">
+                                                                <Setter Property="Visibility" Value="Hidden"/>
+                                                                <Setter Property="IsHitTestVisible" Value="False"/>
+                                                            </DataTrigger>
+                                                        </Style.Triggers>
+                                                    </Style>
+                                                </Border.Style>
+
+                                                <Grid>
+                                                    <Grid.ColumnDefinitions>
+                                                        <ColumnDefinition Width="Auto"/>
+                                                        <ColumnDefinition Width="*"/>
+                                                    </Grid.ColumnDefinitions>
+
+                                                    <Border Grid.Column="0"
+        Width="26"
+        Height="23"
+        CornerRadius="2"
+        VerticalAlignment="Center"
+        BorderBrush="#D0D0D0"
+        BorderThickness="1"
+        Background="#F7F7F7"
+        Margin="0,0,6,0">
+    <TextBlock Text="{Binding DisplayIndex}"
+               HorizontalAlignment="Center"
+               VerticalAlignment="Center"
+               Foreground="#333"/>
+</Border>
+
+                                                    <TextBox x:Name="WordTextBox"
+                                                             Grid.Column="1"
+                                                             Width="140"
+                                                             MinWidth="140"
+                                                             Height="23" Padding="6,1"
+                                                             VerticalContentAlignment="Center"
+                                                             HorizontalAlignment="Left"
+                                                             TextChanged="WordTextBox_TextChanged"
+                                                             GotKeyboardFocus="WordBox_GotKeyboardFocus"
+                                                             LostKeyboardFocus="WordBox_LostKeyboardFocus"
+                                                             PreviewKeyDown="WordBox_PreviewKeyDown">
+                                                        <TextBox.Style>
+                                                            <Style TargetType="TextBox">
+                                                                <Setter Property="Visibility" Value="Hidden"/>
+                                                                <Setter Property="IsTabStop" Value="False"/>
+                                                                <Setter Property="Text" Value="{Binding Text, UpdateSourceTrigger=PropertyChanged}"/>
+                                                                <Style.Triggers>
+                                                                    <DataTrigger Binding="{Binding ElementName=ShowPhraseCheckBox, Path=IsChecked}" Value="True">
+                                                                        <Setter Property="Visibility" Value="Visible"/>
+                                                                        <Setter Property="IsTabStop" Value="True"/>
+                                                                    </DataTrigger>
+                                                                </Style.Triggers>
+                                                            </Style>
+                                                        </TextBox.Style>
+                                                    </TextBox>
+
+                                                    <PasswordBox x:Name="WordPasswordBox"
+                                                                 Grid.Column="1"
+                                                                 Width="140"
+                                                                 MinWidth="140"
+                                                                 Height="23" Padding="6,1"
+                                                                 VerticalContentAlignment="Center"
+                                                                 HorizontalAlignment="Left"
+                                                                 PasswordChanged="WordPasswordBox_PasswordChanged"
+                                                                 GotKeyboardFocus="WordBox_GotKeyboardFocus"
+                                                                 LostKeyboardFocus="WordBox_LostKeyboardFocus"
+                                                                 PreviewKeyDown="WordBox_PreviewKeyDown">
+                                                        <PasswordBox.Style>
+                                                            <Style TargetType="PasswordBox">
+                                                                <Setter Property="Visibility" Value="Visible"/>
+                                                                <Setter Property="IsTabStop" Value="True"/>
+                                                                <Style.Triggers>
+                                                                    <DataTrigger Binding="{Binding ElementName=ShowPhraseCheckBox, Path=IsChecked}" Value="True">
+                                                                        <Setter Property="Visibility" Value="Hidden"/>
+                                                                        <Setter Property="IsTabStop" Value="False"/>
+                                                                    </DataTrigger>
+                                                                </Style.Triggers>
+                                                            </Style>
+                                                        </PasswordBox.Style>
+                                                    </PasswordBox>
+                                                </Grid>
+                                            </Border>
+                                        </DataTemplate>
+                                    </ItemsControl.ItemTemplate>
+                                </ItemsControl>
+                            </Border>
+                        </Grid>
+
+                        <Grid Grid.Row="4" Margin="0,0,0,12" VerticalAlignment="Stretch">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="*"/>
+                            </Grid.RowDefinitions>
+
+                            <Grid Grid.Row="0" Margin="0,0,0,8">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto"/>
+                                    <ColumnDefinition Width="340"/>
+                                    <ColumnDefinition Width="Auto"/>
+                                    <ColumnDefinition Width="70"/>
+                                    <ColumnDefinition Width="Auto"/>
+                                    <ColumnDefinition Width="Auto"/>
+                                </Grid.ColumnDefinitions>
+
+                                <TextBlock Grid.Column="0"
+                                           Text="Derivation path:"
+                                           VerticalAlignment="Center"
+                                           Margin="0,0,8,0"/>
+
+                                <ComboBox x:Name="DerivationPathComboBox"
+                                          Grid.Column="1"
+                                          Width="340"
+                                          VerticalContentAlignment="Center"
+                                          IsEnabled="False"
+                                          SelectionChanged="RecoveryInputs_SelectionChanged">
+                                    <ComboBoxItem Content="XDC Standard (m/44'/550'/0'/0/i) - Default"/>
+                                    <ComboBoxItem Content="Ethereum Compatible (m/44'/60'/0'/0/i)"/>
+                                </ComboBox>
+
+                                <TextBlock Grid.Column="2"
+                                           Text="Addresses:"
+                                           VerticalAlignment="Center"
+                                           Margin="18,0,6,0"/>
+
+                                <ComboBox x:Name="ScanCountComboBox"
+                                          Grid.Column="3"
+                                          Width="70"
+                                          SelectedIndex="0"
+                                          IsEnabled="False"
+                                          SelectionChanged="RecoveryInputs_SelectionChanged">
+                                    <ComboBoxItem Content="12"/>
+                                    <ComboBoxItem Content="24"/>
+                                    <ComboBoxItem Content="36"/>
+                                    <ComboBoxItem Content="48"/>
+                                    <ComboBoxItem Content="60"/>
+                                </ComboBox>
+
+                                <Button x:Name="ScanNowButton" Click="ScanNowButton_Click"
+                                        Grid.Column="4"
+                                        Content="Scan now"
+                                        Width="100"
+                                        Margin="18,0,0,0"
+                                        Padding="12,4"
+                                        IsEnabled="False"/>
+                            </Grid>
+
+                            <TextBlock x:Name="SelectAddressInstructionTextBlock"
+                                       Grid.Row="1"
+                                       Text="Select an address from the list below to continue."
+                                       Margin="0,0,0,4"
+                                       Foreground="#444"/>
+
+                            <Border Grid.Row="2"
+                                    Height="222"
+                                    VerticalAlignment="Top"
+                                    BorderBrush="#BFBFBF"
+                                    BorderThickness="1"
+                                    Background="White"
+                                    Padding="0">
+                                                                <DataGrid x:Name="DerivedAddressesDataGrid"
+                                          RowHeight="24"
+                                          ColumnHeaderHeight="28"
+                                          ScrollViewer.CanContentScroll="True"
+                                          ScrollViewer.VerticalScrollBarVisibility="Auto"
+                                          EnableRowVirtualization="True"
+                                          SnapsToDevicePixels="True"
+                                          Height="220"
+                                          Margin="0"
+                                          VerticalAlignment="Top"
+                                          SelectionChanged="DerivedAddressesListBox_SelectionChanged"
+                                          AutoGenerateColumns="False"
+                                          HeadersVisibility="Column"
+                                          CanUserAddRows="False"
+                                          CanUserDeleteRows="False"
+                                          CanUserResizeRows="False"
+                                          CanUserReorderColumns="False"
+                                          CanUserSortColumns="False"
+                                          IsReadOnly="True"
+                                          SelectionMode="Single"
+                                          SelectionUnit="FullRow"
+                                          GridLinesVisibility="Horizontal"
+                                          RowHeaderWidth="0"
+                                          BorderThickness="0"
+                                          Background="White">
+                                    <DataGrid.Columns>
+                                        <DataGridTextColumn Header="Index"
+                                                            Binding="{Binding Index}"
+                                                            Width="60"/>
+                                        <DataGridTextColumn Header="Address (xdc)"
+                                                            Binding="{Binding AddressXdc}"
+                                                            Width="*"/>
+                                        <DataGridTextColumn Header="Balance (XDC)"
+                                                            Binding="{Binding BalanceXdc}"
+                                                            Width="110"/>
+                                    </DataGrid.Columns>
+                                </DataGrid>
+                            </Border>
+                        </Grid>
+
+                        <Grid Grid.Row="5" Margin="0,4,0,0">
+                            <StackPanel Orientation="Vertical"
+                                        HorizontalAlignment="Left">
+                                <TextBlock x:Name="SelectedAddressSummaryTextBlock"
+                                           Text="Selected address: None"
+                                           Margin="0,0,0,14"
+                                           Foreground="#444"/>
+
+                                <StackPanel Orientation="Horizontal" Margin="0,10,0,0">
+                                    <Button x:Name="CopySelectedAddressButton" Click="CopySelectedAddressButton_Click"
+                                            Content="Copy address"
+                                            Width="120"
+                                            Margin="0,0,10,0"
+                                            Padding="12,4"
+                                            IsEnabled="False"/>
+
+                                    <Button x:Name="CreateKeystoreSelectedButton"
+                                            Content="Create keystore (selected)"
+                                            Width="170"
+                                            Margin="0,0,10,0"
+                                            Padding="12,4"
+                                            IsEnabled="False"
+                                            Click="CreateKeystoreSelectedButton_Click"/>
+
+                                    <Button x:Name="ExportPrivateKeySelectedButton"
+                                            Content="Export private key (selected)"
+                                            Width="180"
+                                            Padding="12,4"
+                                            IsEnabled="False"
+                                            Click="ExportPrivateKeySelectedButton_Click"/>
+                                </StackPanel>
+                            </StackPanel>
+                        </Grid>
+                    </Grid>
+                </TabItem>
+
+                <TabItem Header="Private Key - Advanced">
+                    <Grid Margin="10">
+                        <Border Style="{StaticResource AuthCardBorderStyle}">
+                            <Grid>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                </Grid.RowDefinitions>
+
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto"/>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="Auto"/>
+                                    <ColumnDefinition Width="Auto"/>
+                                </Grid.ColumnDefinitions>
+
+                                <Border Grid.Row="0"
+                                        Grid.ColumnSpan="4"
+                                        Style="{StaticResource AuthInfoPanelStyle}">
+                                    <StackPanel>
+                                        <TextBlock Text="Advanced option - use with care."
+                                                   FontWeight="SemiBold"
+                                                   Foreground="#7A1F1F"
+                                                   Margin="0,0,0,3"/>
+                                        <TextBlock Text="A private key gives full control of the wallet. For regular use, Keystore JSON is recommended."
+                                                   TextWrapping="Wrap"
+                                                   Foreground="#333"/>
+                                    </StackPanel>
+                                </Border>
+
+                                <TextBlock x:Name="PrivateKeyValidationStatusTextBlock"
+                                           Grid.Row="1"
+                                           Grid.ColumnSpan="4"
+                                           Text="Enter a private key, then click Validate."
+                                           Foreground="#666"
+                                           Margin="0,0,0,10"/>
+
+                                <TextBlock Grid.Row="2"
+                                           Grid.Column="0"
+                                           Style="{StaticResource AuthLabelStyle}"
+                                           Text="Private key:"/>
+
+                                <Grid Grid.Row="2"
+                                      Grid.Column="1">
+                                    <PasswordBox x:Name="PrivateKeyPasswordBox"
+                                                 Style="{StaticResource AuthPasswordBoxStyle}"
+                                                 PasswordChanged="PrivateKeyInputs_Changed"/>
+
+                                    <TextBox x:Name="PrivateKeyTextBox"
+                                             Style="{StaticResource AuthTextBoxStyle}"
+                                             Visibility="Collapsed"
+                                             TextChanged="PrivateKeyInputs_Changed"/>
+                                </Grid>
+
+                                <TextBlock x:Name="PrivateKeyFormatTickTextBlock"
+                                           Grid.Row="2"
+                                           Grid.Column="2"
+                                           Text="?"
+                                           FontSize="16"
+                                           Foreground="#228B22"
+                                           VerticalAlignment="Center"
+                                           Margin="8,0,8,0"
+                                           Visibility="Collapsed"/>
+
+                                <Button x:Name="ValidatePrivateKeyButton"
+                                        Grid.Row="2"
+                                        Grid.Column="3"
+                                        Content="Validate"
+                                        Width="110"
+                                        Margin="8,0,0,0"
+                                        Click="ValidatePrivateKeyButton_Click"
+                                        IsEnabled="False"/>
+
+                                <CheckBox x:Name="ShowPrivateKeyCheckBox"
+                                          Grid.Row="3"
+                                          Grid.Column="1"
+                                          Margin="0,10,0,0"
+                                          Content="Show private key"
+                                          Checked="ShowPrivateKeyCheckBox_Checked"
+                                          Unchecked="ShowPrivateKeyCheckBox_Unchecked"/>
+
+                                <TextBlock Grid.Row="4"
+                                           Grid.Column="0"
+                                           Style="{StaticResource AuthLabelStyle}"
+                                           Text="Address:"
+                                           Margin="0,12,10,0"/>
+
+                                <TextBox x:Name="PrivateKeyAddressTextBox"
+                                         Grid.Row="4"
+                                         Grid.Column="1"
+                                         Style="{StaticResource AuthTextBoxStyle}"
+                                         IsReadOnly="True"
+                                         Margin="0,12,0,0"/>
+
+                                <Button x:Name="CopyPrivateKeyAddressButton"
+                                        Grid.Row="4"
+                                        Grid.Column="3"
+                                        Content="Copy address"
+                                        Width="110"
+                                        Margin="8,12,0,0"
+                                        Click="CopyPrivateKeyAddressButton_Click"
+                                        IsEnabled="False"/>
+
+                                <Button x:Name="CreateKeystoreFromPrivateKeyButton"
+                                        Grid.Row="5"
+                                        Grid.Column="1"
+                                        Content="Create keystore for this address"
+                                        Width="230"
+                                        HorizontalAlignment="Left"
+                                        Margin="0,16,0,0"
+                                        Padding="12,4"
+                                        Click="CreateKeystoreFromPrivateKeyButton_Click"
+                                        IsEnabled="False"/>
+                            </Grid>
+                        </Border>
+                    </Grid>
+                </TabItem>
+
+            </TabControl>
+
+            <StackPanel Grid.Row="2"
+                        Orientation="Horizontal"
+                        HorizontalAlignment="Right"
+                        Margin="0,6,0,0">
+                                <Button x:Name="AuthoriseButton"
+                        Content="Authorise"
+                        MinWidth="90"
+                        Height="26"
+                        Margin="0,0,8,0"
+                        Click="Authorise_Click"
+                        IsEnabled="False"/>
+                                <Button x:Name="CancelButton"
+                        Content="Cancel"
+                        MinWidth="90"
+                        Height="26"/>
+            </StackPanel>
+        </Grid>
+    </Border>
+</UserControl>
+
+
+
+
+
+
+
+

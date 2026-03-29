@@ -1,127 +1,107 @@
-# XDC Local Desktop Access Tool
+﻿# 🛡️ XDC Local Desktop Access Tool
 
-A **local-first desktop wallet utility** for interacting with the XDC Network.
+A local-first desktop utility for interacting with the XDC Network securely.
 
-The application provides wallet functionality and transaction tools while keeping **private keys and signing operations entirely on the user's machine**.
-
----
-
-## Features
-
-- Balance checking via XDC RPC
-- Local transaction signing
-- Keystore JSON generation
-- BIP39 seed phrase support
-- Address derivation and scanning
-- Configurable gas settings
-- Explorer integration using XDCScan
+All wallet operations are performed entirely on your machine — no accounts, no telemetry, no remote key handling.
 
 ---
 
-## Screenshots
+## 🔐 Key Features
 
-<table>
-<tr>
-<td align="center">
+- Balance checking via public XDC RPC
+- Local transaction signing (no browser wallets required)
+- Secure authorisation (keystore, seed phrase, or private key)
+- Keystore (JSON) generation for encrypted wallet storage
+- BIP39 seed phrase support (12 / 24 words + optional passphrase)
+- Multiple address derivation and scanning
+- XDCScan integration
 
-### Balance (Empty)
+---
 
-<img src="./src/XdcLocalDesktopAccessTool.App/Assets/Screenshots/balance-tab-empty.png" width="420">
+## 🧠 Security Model
 
-</td>
-<td align="center">
+- No accounts
+- No background services
+- No telemetry
+- No remote storage of secrets
 
-### Balance (Result)
+All sensitive operations:
+- occur locally
+- remain in memory only
+- are cleared on deauthorise or app close
 
-<img src="./src/XdcLocalDesktopAccessTool.App/Assets/Screenshots/balance-tab-result.png" width="420">
+---
 
-</td>
-</tr>
+## 🖥️ Screenshots
 
-<tr>
-<td align="center">
-
-### Send Transaction
-
-<img src="./src/XdcLocalDesktopAccessTool.App/Assets/Screenshots/send-tab-preview.png" width="420">
-
-</td>
-<td align="center">
-
-### Wallet Creation
-
-<img src="./src/XdcLocalDesktopAccessTool.App/Assets/Screenshots/create-wallet-window.png" width="420">
-
-</td>
-</tr>
-
-<tr>
-<td align="center">
-
-### Generate Keystore
-
-<img src="./src/XdcLocalDesktopAccessTool.App/Assets/Screenshots/generate-keystore-window.png" width="420">
-
-</td>
-<td align="center">
-
-### Authorisation (Private Key)
-
-<img src="./src/XdcLocalDesktopAccessTool.App/Assets/Screenshots/authorisation-private-key.png" width="420">
-
-</td>
-</tr>
-
-<tr>
-<td align="center">
+### Balance & Send
+![Balance Send](screenshots/balance-send-result.png)
 
 ### Authorisation (Keystore)
+![Auth Keystore](screenshots/auth-keystore.png)
 
-<img src="./src/XdcLocalDesktopAccessTool.App/Assets/Screenshots/authorisation-keystore.png" width="420">
+### Seed Phrase + Address Scan
+![Auth Seed](screenshots/auth-seed-xdc-scan.png)
 
-</td>
-<td align="center">
+### Create Wallet
+![Create Wallet](screenshots/create-wallet-12-generated.png)
 
-### Authorisation (Seed Phrase)
+### Generate Keystore (Locked)
+![Generate Keystore](screenshots/generate-keystore-locked.png)
 
-<img src="./src/XdcLocalDesktopAccessTool.App/Assets/Screenshots/authorisation-seed-phrase.png" width="420">
-
-</td>
-</tr>
-
-<tr>
-<td align="center">
-
-### Support Window
-
-<img src="./src/XdcLocalDesktopAccessTool.App/Assets/Screenshots/support-window.png" width="420">
-
-</td>
-<td align="center">
-
-### About Tab
-
-<img src="./src/XdcLocalDesktopAccessTool.App/Assets/Screenshots/about-tab.png" width="420">
-
-</td>
-</tr>
-</table>
+### About
+![About](screenshots/about-tab.png)
 
 ---
 
-## Security
+## 🚀 Usage
 
-Always verify release downloads before running wallet software.
+### Check Balance
+Enter an XDC address and click **Check Balance**
 
-Each release includes:
+### Authorise
+Use one of:
+- Keystore (recommended)
+- Seed phrase (advanced)
+- Private key (advanced)
 
-- SHA256 checksum
-- PGP signature
-- Public release key
-- Verification instructions
+### Send Transaction
+- Enter recipient
+- Enter amount
+- Preview
+- Send
+
+### Create Wallet
+- Generate seed phrase
+- Store securely
+- Optionally create keystore
 
 ---
 
-## License
+## ⚠️ Important
 
-GPL-3.0
+- Lost keys = lost funds
+- Never share your seed phrase
+- Always verify addresses before sending
+
+---
+
+## 📦 Run
+
+No install required.
+
+Run:
+XDC Desktop Access Tool.exe
+
+---
+
+## ☕ Support
+
+xdc8DfC137957CaCe772021a84019E658DEFECF43
+
+---
+
+## 👤 Author
+
+David McDougall
+

@@ -5,6 +5,7 @@ using System.Net.Http;
 using System.Numerics;
 using System.Text;
 using System.Text.Json;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
@@ -15,7 +16,7 @@ using Nethereum.Util;
 using Nethereum.Web3;
 using Nethereum.Web3.Accounts;
 using XdcLocalDesktopAccessTool.App.Services;
-using XdcLocalDesktopAccessTool.App.Views.Windows;
+using XdcLocalDesktopAccessTool.App.Views.Controls;
 
 namespace XdcLocalDesktopAccessTool.App.Views.Tabs
 {
@@ -26,6 +27,17 @@ namespace XdcLocalDesktopAccessTool.App.Views.Tabs
 
         private const long DefaultGasLimit = 21000;
         private const string DonationAddressXdc = "xdcd8DFc137957CaCe772021a84019E658DEFECCF43";
+        private const string DefaultRpcUrl = "https://xdc.public-rpc.com";
+
+        private bool _balanceBusy;
+
+        private static readonly HttpClient BalanceHttp = new HttpClient
+        {
+            Timeout = TimeSpan.FromSeconds(15)
+        };
+
+        private static readonly Regex BalanceHexOnly =
+            new Regex("^[0-9a-fA-F]+$", RegexOptions.Compiled);
 
         public SendTab()
         {
@@ -41,6 +53,14 @@ namespace XdcLocalDesktopAccessTool.App.Views.Tabs
                 UpdateToAddressUi();
                 ApplyGasModeUi();
                 await RefreshSuggestedGasAsync();
+
+// -------------------------------
+// BALANCE INIT (default RPC)
+// -------------------------------
+CustomRpcTextBox.Text = DefaultRpcUrl;
+RpcModeComboBox.SelectedIndex = 0;
+CustomRpcTextBox.IsEnabled = false;
+AppSession.Instance.ResetRpcToDefault();
             };
         }
 
@@ -48,7 +68,7 @@ namespace XdcLocalDesktopAccessTool.App.Views.Tabs
         // AUTHORISATION UI
         // --------------------------------------------------
 
-        private void RefreshAuthUi()
+        public void RefreshAuthUi()
         {
             bool authorised = AppSession.Instance.IsAuthorised;
 
@@ -130,12 +150,9 @@ namespace XdcLocalDesktopAccessTool.App.Views.Tabs
 
         private void Authorise_Click(object sender, RoutedEventArgs e)
         {
-            var win = new AuthorisationWindow
-            {
-                Owner = Window.GetWindow(this)
-            };
+            var main = Window.GetWindow(this) as MainWindow;
 
-            if (win.ShowDialog() == true)
+            if (main != null && main.ShowAuthorisationOverlay())
             {
                 RefreshAuthUi();
                 AppendLine("Authorised.");
@@ -183,6 +200,23 @@ namespace XdcLocalDesktopAccessTool.App.Views.Tabs
             GasModeCombo.SelectedIndex = 0;
         }
 
+        public void ClearBalanceEntryFields()
+        {
+            BalanceAddressTextBox.Text = string.Empty;
+            BalanceTextBlock.Text = string.Empty;
+            BalanceAddressValidTick.Visibility = Visibility.Hidden;
+
+            RpcModeComboBox.SelectedIndex = 0;
+            CustomRpcTextBox.Text = DefaultRpcUrl;
+            CustomRpcTextBox.IsEnabled = false;
+
+            AppSession.Instance.ResetRpcToDefault();
+
+            CheckBalanceButton.IsEnabled = false;
+            ViewOnExplorerButton.IsEnabled = false;
+            BalanceClearButton.IsEnabled = false;
+        }
+
         public bool HasDataToLoseForTabChange()
         {
             return AppSession.Instance.IsAuthorised
@@ -198,15 +232,383 @@ namespace XdcLocalDesktopAccessTool.App.Views.Tabs
             AppSession.Instance.ClearAuthorisation();
             AppSession.Instance.LastTxHash = string.Empty;
 
-            ToAddressTextBox.Text = string.Empty;
-            AmountTextBox.Text = string.Empty;
-            CustomGasTextBox.Text = string.Empty;
+            ClearBalanceEntryFields();
+            ClearSendEntryFields();
             OutputText.Text = string.Empty;
-            GasModeCombo.SelectedIndex = 0;
 
             RefreshAuthUi();
         }
 
+        private void RpcModeComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (!_uiReady)
+                return;
+
+            bool isCustom = RpcModeComboBox.SelectedIndex == 1;
+            CustomRpcTextBox.IsEnabled = isCustom;
+
+            if (!isCustom)
+                CustomRpcTextBox.Text = DefaultRpcUrl;
+
+            ApplyRpcToSession();
+        }
+
+        private void ApplyRpcToSession()
+        {
+            if (RpcModeComboBox.SelectedIndex != 1)
+            {
+                AppSession.Instance.ResetRpcToDefault();
+                return;
+            }
+
+            var custom = (CustomRpcTextBox.Text ?? string.Empty).Trim();
+            AppSession.Instance.SetRpc(custom);
+        }
+
+        private void CustomRpcTextBox_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            if (!_uiReady)
+                return;
+
+            if (RpcModeComboBox.SelectedIndex == 1)
+                ApplyRpcToSession();
+        }
+
+        private bool IsRpcUrlValid(string url)
+        {
+            if (string.IsNullOrWhiteSpace(url))
+                return false;
+
+            if (!Uri.TryCreate(url, UriKind.Absolute, out var uri))
+                return false;
+
+            return uri.Scheme == Uri.UriSchemeHttp || uri.Scheme == Uri.UriSchemeHttps;
+        }
+
+        private bool ValidateCustomRpcOrConfirmDefaultFallback()
+        {
+            bool isCustom = RpcModeComboBox.SelectedIndex == 1;
+            if (!isCustom)
+                return true;
+
+            var custom = (CustomRpcTextBox.Text ?? string.Empty).Trim();
+            if (!string.IsNullOrWhiteSpace(custom))
+                return true;
+
+            var result = MessageBox.Show(
+                "Custom RPC is selected, but no URL has been entered." + Environment.NewLine + Environment.NewLine +
+                "Do you want to use the default RPC instead?",
+                "Blank Custom RPC",
+                MessageBoxButton.YesNo,
+                MessageBoxImage.Warning);
+
+            if (result != MessageBoxResult.Yes)
+                return false;
+
+            RpcModeComboBox.SelectedIndex = 0;
+            CustomRpcTextBox.Text = DefaultRpcUrl;
+            ApplyRpcToSession();
+            return true;
+        }
+
+        private bool BalanceIsAddressFormatValid(string input)
+        {
+            if (string.IsNullOrWhiteSpace(input))
+                return false;
+
+            var s = input.Trim();
+
+            if (s.StartsWith("xdc", StringComparison.OrdinalIgnoreCase))
+                s = "0x" + s.Substring(3);
+
+            if (!s.StartsWith("0x", StringComparison.OrdinalIgnoreCase))
+                return false;
+
+            if (s.Length != 42)
+                return false;
+
+            var hex = s.Substring(2);
+            return BalanceHexOnly.IsMatch(hex);
+        }
+
+        private void BalanceAddressTextBox_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            if (!_uiReady) return;
+
+            bool isValid = BalanceIsAddressFormatValid(BalanceAddressTextBox.Text ?? string.Empty);
+            bool hasText = !string.IsNullOrWhiteSpace(BalanceAddressTextBox.Text);
+
+            BalanceAddressValidTick.Visibility = isValid ? Visibility.Visible : Visibility.Hidden;
+            CheckBalanceButton.IsEnabled = isValid && !_balanceBusy;
+            ViewOnExplorerButton.IsEnabled = isValid && !_balanceBusy;
+            BalanceClearButton.IsEnabled = hasText && !_balanceBusy;
+        }
+
+        private bool TryValidateAndNormalizeBalanceAddress(string input, out string addr0x, out string addrXdc)
+        {
+            addr0x = "";
+            addrXdc = "";
+
+            if (string.IsNullOrWhiteSpace(input))
+            {
+                ShowBalanceError("Please enter an address.");
+                return false;
+            }
+
+            var s = input.Trim();
+
+            if (s.StartsWith("xdc", StringComparison.OrdinalIgnoreCase))
+                s = "0x" + s.Substring(3);
+
+            if (!s.StartsWith("0x", StringComparison.OrdinalIgnoreCase) || s.Length != 42)
+            {
+                ShowBalanceError("Invalid address.");
+                return false;
+            }
+
+            var hex = s.Substring(2);
+            if (!BalanceHexOnly.IsMatch(hex))
+            {
+                ShowBalanceError("Invalid address.");
+                return false;
+            }
+
+            addr0x = "0x" + hex;
+            addrXdc = "xdc" + hex;
+            return true;
+        }
+
+        private static async Task<string> GetBalanceWeiHexAsyncBalance(string rpcUrl, string addr0x)
+        {
+            var payload = new
+            {
+                jsonrpc = "2.0",
+                id = 1,
+                method = "eth_getBalance",
+                @params = new object[] { addr0x, "latest" }
+            };
+
+            var json = JsonSerializer.Serialize(payload);
+            using var content = new StringContent(json, Encoding.UTF8, "application/json");
+            using var resp = await BalanceHttp.PostAsync(rpcUrl, content);
+            resp.EnsureSuccessStatusCode();
+
+            var body = await resp.Content.ReadAsStringAsync();
+            using var doc = JsonDocument.Parse(body);
+
+            if (doc.RootElement.TryGetProperty("result", out var result))
+                return result.GetString() ?? "0x0";
+
+            return "0x0";
+        }
+
+        private static async Task<string?> TryGetBalanceChainIdAsync(string rpcUrl)
+        {
+            try
+            {
+                var payload = new
+                {
+                    jsonrpc = "2.0",
+                    id = 1,
+                    method = "eth_chainId",
+                    @params = Array.Empty<object>()
+                };
+
+                var json = JsonSerializer.Serialize(payload);
+                using var content = new StringContent(json, Encoding.UTF8, "application/json");
+                using var resp = await BalanceHttp.PostAsync(rpcUrl, content);
+                resp.EnsureSuccessStatusCode();
+
+                var body = await resp.Content.ReadAsStringAsync();
+                using var doc = JsonDocument.Parse(body);
+
+                if (!doc.RootElement.TryGetProperty("result", out var result))
+                    return null;
+
+                var chainIdHex = result.GetString();
+                if (chainIdHex == null) return null;
+
+                if (chainIdHex.StartsWith("0x"))
+                    chainIdHex = chainIdHex.Substring(2);
+
+                if (!BigInteger.TryParse(chainIdHex, NumberStyles.HexNumber, CultureInfo.InvariantCulture, out var bi))
+                    return null;
+
+                return bi.ToString();
+            }
+            catch
+            {
+                return null;
+            }
+        }
+
+        private static bool TryBalanceHexToBigInteger(string hex, out BigInteger value)
+        {
+            value = BigInteger.Zero;
+
+            if (string.IsNullOrWhiteSpace(hex))
+                return false;
+
+            if (hex.StartsWith("0x", StringComparison.OrdinalIgnoreCase))
+                hex = hex.Substring(2);
+
+            if (string.IsNullOrWhiteSpace(hex))
+            {
+                value = BigInteger.Zero;
+                return true;
+            }
+
+            if (!BalanceHexOnly.IsMatch(hex))
+                return false;
+
+            hex = "0" + hex;
+
+            return BigInteger.TryParse(
+                hex,
+                NumberStyles.AllowHexSpecifier,
+                CultureInfo.InvariantCulture,
+                out value);
+        }
+
+        private static string WeiToXdcStringBalance(BigInteger wei)
+        {
+            const int chainDecimals = 18;
+            const int displayDecimals = 9;
+
+            var divisor = BigInteger.Pow(10, chainDecimals);
+            var whole = BigInteger.DivRem(wei, divisor, out var remainder);
+
+            var scaleDown = BigInteger.Pow(10, chainDecimals - displayDecimals);
+            var frac = remainder / scaleDown;
+
+            if (frac == 0)
+                return whole.ToString(CultureInfo.InvariantCulture);
+
+            var fracStr = frac.ToString(CultureInfo.InvariantCulture)
+                              .PadLeft(displayDecimals, '0')
+                              .TrimEnd('0');
+
+            return $"{whole.ToString(CultureInfo.InvariantCulture)}.{fracStr}";
+        }
+
+        private static void ShowBalanceError(string message)
+        {
+            MessageBox.Show(
+                message,
+                "XDC Desktop Access Tool",
+                MessageBoxButton.OK,
+                MessageBoxImage.Warning);
+        }
+
+        private void SetBalanceBusy(bool isBusy)
+        {
+            _balanceBusy = isBusy;
+
+            BalanceAddressTextBox.IsEnabled = !isBusy;
+            RpcModeComboBox.IsEnabled = !isBusy;
+            CustomRpcTextBox.IsEnabled = !isBusy && RpcModeComboBox.SelectedIndex == 1;
+
+            bool isValid = BalanceIsAddressFormatValid(BalanceAddressTextBox.Text ?? string.Empty);
+            bool hasText = !string.IsNullOrWhiteSpace(BalanceAddressTextBox.Text);
+
+            BalanceAddressValidTick.Visibility = isValid ? Visibility.Visible : Visibility.Hidden;
+            CheckBalanceButton.IsEnabled = isValid && !isBusy;
+            ViewOnExplorerButton.IsEnabled = isValid && !isBusy;
+            BalanceClearButton.IsEnabled = hasText && !isBusy;
+        }
+
+        private async void CheckBalance_Click(object sender, RoutedEventArgs e)
+        {
+            BalanceTextBlock.Text = "Checking balance..." + Environment.NewLine + "Please wait...";
+
+            var input = (BalanceAddressTextBox.Text ?? "").Trim();
+            if (!TryValidateAndNormalizeBalanceAddress(input, out var addr0x, out var addrXdc))
+                return;
+
+            if (!ValidateCustomRpcOrConfirmDefaultFallback())
+                return;
+
+            var rpcUrl = AppSession.Instance.CurrentRpcUrl;
+
+if (!IsRpcUrlValid(rpcUrl))
+{
+    ShowBalanceError("The custom RPC URL is not valid or unreachable.\n\nPlease check the URL and try again.");
+    return;
+}
+
+            SetBalanceBusy(true);
+
+            try
+            {
+                var chainId = await TryGetBalanceChainIdAsync(rpcUrl);
+                var weiHex = await GetBalanceWeiHexAsyncBalance(rpcUrl, addr0x);
+
+                if (!TryBalanceHexToBigInteger(weiHex, out var wei))
+                {
+                    ShowBalanceError("Received unexpected response from network.");
+                    return;
+                }
+
+                var xdc = WeiToXdcStringBalance(wei);
+
+                var sb = new StringBuilder();
+                sb.AppendLine($"Address (xdc): {addrXdc}");
+                sb.AppendLine($"Address (0x):  {addr0x}");
+                sb.AppendLine($"RPC:           {rpcUrl}");
+                if (chainId != null)
+                    sb.AppendLine($"ChainId:       {chainId}");
+                sb.AppendLine($"Balance:       {xdc} XDC");
+
+                BalanceTextBlock.Text = sb.ToString().TrimEnd();
+            }
+            catch
+            {
+                ShowBalanceError("Unable to reach the XDC network.");
+            }
+            finally
+            {
+                SetBalanceBusy(false);
+            }
+        }
+
+        private void ViewOnExplorerButton_Click(object sender, RoutedEventArgs e)
+        {
+            var input = (BalanceAddressTextBox.Text ?? "").Trim();
+            if (!TryValidateAndNormalizeBalanceAddress(input, out var addr0x, out _))
+                return;
+
+            var url = $"https://xdcscan.com/address/{addr0x}";
+
+            try
+            {
+                Process.Start(new ProcessStartInfo
+                {
+                    FileName = url,
+                    UseShellExecute = true
+                });
+            }
+            catch
+            {
+                ShowBalanceError("Could not open explorer.");
+            }
+        }
+
+        private void BalanceClearButton_Click(object sender, RoutedEventArgs e)
+        {
+            BalanceAddressTextBox.Text = string.Empty;
+            BalanceTextBlock.Text = string.Empty;
+            BalanceAddressValidTick.Visibility = Visibility.Hidden;
+
+            RpcModeComboBox.SelectedIndex = 0;
+            CustomRpcTextBox.Text = DefaultRpcUrl;
+            CustomRpcTextBox.IsEnabled = false;
+
+            AppSession.Instance.ResetRpcToDefault();
+
+            CheckBalanceButton.IsEnabled = false;
+            ViewOnExplorerButton.IsEnabled = false;
+            BalanceClearButton.IsEnabled = false;
+        }
         // --------------------------------------------------
         // COPY ADDRESS
         // --------------------------------------------------
@@ -331,7 +733,7 @@ namespace XdcLocalDesktopAccessTool.App.Views.Tabs
             }
             catch
             {
-                SuggestedGasText.Text = "Suggested gas: —";
+                SuggestedGasText.Text = "Suggested gas: -";
             }
         }
 
@@ -345,7 +747,7 @@ namespace XdcLocalDesktopAccessTool.App.Views.Tabs
             if (!ValidateInputs(out var toXdc, out var amountXdc, out var gasGwei)) return;
 
             var from0x = TryGetFromAddress0x() ?? "";
-            var fromXdc = string.IsNullOrWhiteSpace(from0x) ? "—" : ToXdcAddress(from0x);
+            var fromXdc = string.IsNullOrWhiteSpace(from0x) ? "-" : ToXdcAddress(from0x);
             var estimatedNetworkFeeXdc = (gasGwei * DefaultGasLimit) / 1_000_000_000m;
             var maximumTotalCostXdc = amountXdc + estimatedNetworkFeeXdc;
 
@@ -515,11 +917,11 @@ namespace XdcLocalDesktopAccessTool.App.Views.Tabs
 
                 if (isDonationSend)
                 {
-                    var thankYou = new ThankYouWindow
+                    var main = Window.GetWindow(this) as MainWindow;
+                    if (main != null)
                     {
-                        Owner = Window.GetWindow(this)
-                    };
-                    thankYou.ShowDialog();
+                        main.ShowModalOverlay(new ThankYouOverlayControl());
+                    }
                 }
             }
             catch (Exception ex)
@@ -786,7 +1188,7 @@ namespace XdcLocalDesktopAccessTool.App.Views.Tabs
             }
         }
 
-        private void AppendLine(string text)
+        public void AppendLine(string text)
         {
             OutputText.Text += (string.IsNullOrEmpty(OutputText.Text) ? "" : "\n") + text;
         }
@@ -899,3 +1301,22 @@ namespace XdcLocalDesktopAccessTool.App.Views.Tabs
         }
     }
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

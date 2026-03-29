@@ -1,65 +1,135 @@
 <UserControl x:Class="XdcLocalDesktopAccessTool.App.Views.Tabs.AdvancedTab"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <UserControl.Resources>
+        <Style x:Key="MainTabContainerStyle" TargetType="Border">
+            <Setter Property="CornerRadius" Value="8"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="BorderBrush" Value="#A0A0A0"/>
+            <Setter Property="Padding" Value="12"/>
+            <Setter Property="Margin" Value="6"/>
+            <Setter Property="Background" Value="#F5F5F5"/>
+        </Style>
+    </UserControl.Resources>
 
     <Border Style="{StaticResource MainTabContainerStyle}">
         <Grid>
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="*"/>
+                <RowDefinition Height="Auto"/>
             </Grid.RowDefinitions>
 
             <StackPanel Grid.Row="0"
-                        Margin="0,0,0,20">
+                        Margin="0,4,0,18">
                 <TextBlock Text="Advanced"
                            FontSize="22"
                            FontWeight="Bold"
-                           Margin="0,0,0,10"/>
+                           Margin="0,0,0,18"/>
 
-                <StackPanel MaxWidth="760">
-                    <TextBlock FontSize="13"
-                               TextWrapping="Wrap"
-                               Margin="0,0,0,4">
-• Create a new wallet using a 12 or 24 word recovery phrase. An optional BIP39 passphrase can also be used for advanced setups.
-                    </TextBlock>
+                <Border BorderBrush="#6F6F6F"
+                        BorderThickness="1"
+                        Padding="10"
+                        Margin="0,0,0,0"
+                        MaxWidth="860">
+                    <StackPanel>
+                        <TextBlock Text="Before you begin"
+                                   FontWeight="SemiBold"
+                                   Margin="0,0,0,6"/>
 
-                    <TextBlock FontSize="13"
-                               TextWrapping="Wrap"
-                               Margin="0,0,0,4">
-• Verify that your recovery phrase has been written down correctly before using the wallet.
-                    </TextBlock>
+                        <TextBlock Text="- Write down your recovery phrase before using a newly created wallet."
+                                   FontSize="13"
+                                   TextWrapping="Wrap"
+                                   Margin="0,0,0,4"/>
 
-                    <TextBlock FontSize="13"
-                               TextWrapping="Wrap"
-                               Margin="0,0,0,4">
-• Generate an encrypted keystore JSON file from a wallet. This can be used for secure everyday access without exposing the recovery phrase.
-                    </TextBlock>
+                        <TextBlock Text="- Keystore generation normally uses the primary derived address (index 0)."
+                                   FontSize="13"
+                                   TextWrapping="Wrap"
+                                   Margin="0,0,0,4"/>
 
-                    <TextBlock FontSize="13"
-                               TextWrapping="Wrap">
-• By default, keystore generation uses the primary derived address (index 0). Advanced users can authorise with a recovery phrase and select different derived addresses if required.
-                    </TextBlock>
-                </StackPanel>
+                        <TextBlock Text="- To generate a keystore for a different address index, use the seed phrase derivation tool."
+                                   FontSize="13"
+                                   TextWrapping="Wrap"
+                                   Margin="0,0,0,4"/>
+
+                        <TextBlock Text="- Record any BIP39 passphrase exactly. A different passphrase creates a different wallet."
+                                   FontSize="13"
+                                   TextWrapping="Wrap"/>
+                    </StackPanel>
+                </Border>
             </StackPanel>
 
             <StackPanel Grid.Row="1"
-                        Orientation="Vertical"
-                        HorizontalAlignment="Center"
-                        VerticalAlignment="Top"
-                        Margin="0,8,0,0">
-                <Button x:Name="CreateWalletButton"
-                        Content="Create New Wallet"
-                        Width="220"
-                        Height="34"
-                        Margin="0,0,0,10"
-                        Click="CreateWalletButton_Click"/>
+                        Margin="0,0,0,0"
+                        VerticalAlignment="Top">
 
-                <Button x:Name="GenerateKeystoreButton"
-                        Content="Generate Keystore File"
-                        Width="220"
-                        Height="34"
-                        Click="GenerateKeystoreButton_Click"/>
+                <Border BorderBrush="#6F6F6F"
+                        BorderThickness="1"
+                        Padding="12"
+                        Margin="0,0,0,10">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+
+                        <StackPanel Grid.Column="0" Margin="0,0,14,0">
+                            <TextBlock Text="Create New Wallet"
+                                       FontSize="15"
+                                       FontWeight="SemiBold"
+                                       Margin="0,0,0,5"/>
+
+                            <TextBlock Text="Generate a new wallet using a 12 or 24 word recovery phrase with optional BIP39 passphrase support."
+                                       TextWrapping="Wrap"
+                                       FontSize="13"/>
+                        </StackPanel>
+
+                        <Button Grid.Column="1"
+                                x:Name="CreateWalletButton"
+                                Content="Create New Wallet"
+                                Width="190"
+                                Height="30"
+                                VerticalAlignment="Center"
+                                Click="CreateWalletButton_Click"/>
+                    </Grid>
+                </Border>
+
+                <Border BorderBrush="#6F6F6F"
+                        BorderThickness="1"
+                        Padding="12"
+                        Margin="0,0,0,10">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+
+                        <StackPanel Grid.Column="0" Margin="0,0,14,0">
+                            <TextBlock Text="Generate Keystore File"
+                                       FontSize="15"
+                                       FontWeight="SemiBold"
+                                       Margin="0,0,0,5"/>
+
+                            <TextBlock Text="Create an encrypted keystore JSON file for secure everyday access without exposing the recovery phrase."
+                                       TextWrapping="Wrap"
+                                       FontSize="13"/>
+                        </StackPanel>
+
+                        <Button Grid.Column="1"
+                                x:Name="GenerateKeystoreButton"
+                                Content="Generate Keystore File"
+                                Width="190"
+                                Height="30"
+                                VerticalAlignment="Center"
+                                Click="GenerateKeystoreButton_Click"/>
+                    </Grid>
+                </Border>
             </StackPanel>
+
+            <Grid Grid.Row="2"
+                  Height="1"
+                  Margin="0,12,0,0"/>
         </Grid>
     </Border>
 </UserControl>
+

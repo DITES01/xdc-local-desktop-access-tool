@@ -12,11 +12,10 @@ namespace XdcLocalDesktopAccessTool.App.Views.Tabs
 
         private void SupportThisTool_Click(object sender, RoutedEventArgs e)
         {
-            var win = new SupportWindow
+            if (Application.Current.MainWindow is MainWindow main)
             {
-                Owner = Window.GetWindow(this)
-            };
-            win.ShowDialog();
+                main.ShowSupportOverlay();
+            }
         }
     }
 }

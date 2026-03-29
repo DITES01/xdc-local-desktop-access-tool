@@ -1,7 +1,7 @@
 using System;
 using System.Windows;
 using System.Windows.Controls;
-using XdcLocalDesktopAccessTool.App.Views.Windows;
+using XdcLocalDesktopAccessTool.App.Views.Controls;
 
 namespace XdcLocalDesktopAccessTool.App.Views.Tabs
 {
@@ -16,14 +16,16 @@ namespace XdcLocalDesktopAccessTool.App.Views.Tabs
         {
             try
             {
-                var window = new CreateWalletWindow();
-                window.Owner = Window.GetWindow(this);
-                window.ShowDialog();
+                var main = Window.GetWindow(this) as MainWindow;
+                if (main == null)
+                    return;
+
+                main.ShowCreateWalletOverlay();
             }
             catch (Exception ex)
             {
                 MessageBox.Show(
-                    "Unable to open Create Wallet window.\n\n" + ex,
+                    "Unable to open Create Wallet overlay.\n\n" + ex,
                     "Error",
                     MessageBoxButton.OK,
                     MessageBoxImage.Error);
@@ -34,18 +36,22 @@ namespace XdcLocalDesktopAccessTool.App.Views.Tabs
         {
             try
             {
-                var window = new GenerateKeystoreFileWindow();
-                window.Owner = Window.GetWindow(this);
-                window.ShowDialog();
+                var main = Window.GetWindow(this) as MainWindow;
+                if (main == null)
+                    return;
+
+                main.ShowGenerateKeystoreOverlay();
             }
             catch (Exception ex)
             {
                 MessageBox.Show(
-                    "Unable to open Generate Keystore window.\n\n" + ex,
+                    "Unable to open Generate Keystore overlay.\n\n" + ex,
                     "Error",
                     MessageBoxButton.OK,
                     MessageBoxImage.Error);
             }
         }
+
     }
 }
+
