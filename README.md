@@ -1,8 +1,8 @@
-ï»¿# XDC Local Desktop Access Tool
+# XDC Local Desktop Access Tool
 
 A local-first desktop utility for interacting with the XDC Network securely.
 
-All wallet operations are performed entirely on your machine â€” no accounts, no telemetry, and no remote key handling.
+All wallet operations are performed entirely on your machine — no accounts, no telemetry, and no remote key handling.
 
 ---
 
@@ -77,7 +77,7 @@ It also helps users recover access to funds by allowing derivation path selectio
 
 Two download options are provided in Releases:
 
-### Option 1 â€” Installer (.exe)
+### Option 1 — Installer (.exe)
 Recommended for most users.
 
 1. Download the installer from the latest release
@@ -85,7 +85,7 @@ Recommended for most users.
 3. Follow the on-screen setup steps
 4. Launch the application from the desktop or Start menu
 
-### Option 2 â€” Portable ZIP
+### Option 2 — Portable ZIP
 For users who prefer to run the app without installing.
 
 1. Download the ZIP package from the latest release
@@ -98,11 +98,14 @@ For users who prefer to run the app without installing.
 
 Release files should always be verified before use.
 
-Each release may include:
-- SHA256 checksum
+For tagged releases, verification assets are provided on the GitHub Releases page and may include:
+
+- SHA256 checksum file
 - PGP signature
-- Public verification key
+- Public release key
 - Verification instructions
+
+Always follow the instructions included with the specific release.
 
 ---
 
@@ -162,3 +165,4 @@ David McDougall
 ## License
 
 GPL-3.0
+
