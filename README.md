@@ -166,3 +166,13 @@ David McDougall
 
 GPL-3.0
 
+
+## Disclaimer
+
+This is an independent, unofficial tool and is not affiliated with XinFin or the XDC Network.
+
+All wallet operations are performed locally on the user's machine.  
+Users are fully responsible for securing their private keys, recovery phrases, and environment.
+
+The author accepts no responsibility for any loss of funds, data, or damages resulting from the use of this software.
+
